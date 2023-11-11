@@ -3,8 +3,7 @@ The input file must contain keywords describing several aspects of the tournamen
 if they contain spaces at the start or end, those spaces are treated as parts of the words written on that line. Hence,
 avoid leading and trailing spaces.
 
-A list of keywords follows.
-
+## Keywords
 #### `points.win`
 Must be followed by a space and a number indicating how many points are earned by the winner of a match. Optional;
 defaults to 2.
@@ -30,3 +29,26 @@ tied), an equals sign <kbd>=</kbd> must separate them. No spaces must be added.
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
 list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
 comma <kbd>,</kbd>. No spaces must be added.
+
+## Example
+```
+team Banana
+
+fixtures.completed
+Apple,Orange
+Apple,Guava
+
+fixtures.upcoming
+Guava,Orange
+Jackfruit,Apple
+Orange,Jackfruit
+Guava,Jackfruit
+Banana,Apple
+Orange,Banana
+Guava,Banana
+Jackfruit,Banana
+```
+
+Team names are case-sensitive.
+
+# Output Format
