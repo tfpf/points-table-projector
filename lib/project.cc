@@ -1,8 +1,10 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #define THROW(exc, msg)  \
@@ -21,7 +23,8 @@ class PointsTableProjector
     PointsTableProjector(char const *fname);
     void parse(void);
     void parse_int(char const *str, int& var);
-    void parse_fixture(std::string& str, std::vector<std::vector<int>>& vecvar);
+    void parse_fixture(std::string const& str, bool update_points);
+    int reg(std::string const& tname);
 
     private:
     char const *fname;
@@ -29,7 +32,9 @@ class PointsTableProjector
     int points_win = 2;
     int points_lose = 0;
     int points_other = 1;
-    std::vector<std::vector<int>> fixtures_completed;
+    std::unordered_map<std::string, int const> team_id;
+    std::vector<int> team_points;
+    std::vector<std::vector<int>> fixtures_upcoming;
 };
 
 /******************************************************************************
@@ -52,7 +57,7 @@ PointsTableProjector::parse(void)
     std::ifstream fhandle(this->fname);
     if(!fhandle.good() || !std::filesystem::is_regular_file(this->fname))
     {
-        THROW(std::runtime_error, "Could not read '" + fname + "'.");
+        THROW(std::runtime_error, "Could not read '" + this->fname + "'.");
     }
     while(true)
     {
@@ -83,13 +88,27 @@ PointsTableProjector::parse(void)
         }
         if(readline == "fixtures.completed")
         {
-            // Only update the points table. Don't store this. Store only upcoming fixtures.
             while(std::getline(fhandle, readline) && !readline.empty())
             {
                 ++this->line_number;
-                this->parse_fixture(readline, this->fixtures_completed);
+                this->parse_fixture(readline, true);
             }
+            ++this->line_number;
+            continue;
         }
+        if(readline == "fixtures.upcoming")
+        {
+            while(std::getline(fhandle, readline) && !readline.empty())
+            {
+                ++this->line_number;
+                this->parse_fixture(readline, false);
+            }
+            ++this->line_number;
+            continue;
+        }
+        std::string message("Unknown keyword in '");
+        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
+        THROW(std::invalid_argument, message);
     }
 }
 
@@ -109,32 +128,64 @@ PointsTableProjector::parse_int(char const *str, int& intvar)
     catch(std::exception& e)
     {
         std::string message("Integer parse failure in '");
-        message += std::string(fname) + "' on line " + std::to_string(line_number) + '.';
+        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
 }
 
 /******************************************************************************
- * Store information about a match in the specified variable.
+ * Store information about a match.
  *
  * @param str String to parse.
- * @param vecvar Variable to store the result in.
+ * @param update_points Whether to update the points table.
  *****************************************************************************/
 void
-PointsTableProjector::parse_fixture(std::string& str, std::vector<std::vector<int>>& vecvar)
+PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 {
-    auto comma = str.find(',');
-    auto equals = str.find('=');
-    if(comma != std::string::npos && equals != std::string::npos)
+    auto delim_idx = str.find_first_of(",=");
+    if(delim_idx == std::string::npos)
     {
-        std::string message("Ambiguous outcomes (comma and equals) found in '");
-        message += std::string(fname) + "' on line " + std::to_string(line_number) + '.';
+        std::string message("Neither ',' nor '=' found in '");
+        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    auto delimiter = comma != std::string::npos ? comma : equals;
-    std::string first_team = str.substr(0, delimiter);
-    std::string second_team = str.substr(delimiter + 1, std::string::npos);
-    std::cout << first_team << ' ' << second_team << '\n';
+    int first_team = this->reg(str.substr(0, delim_idx));
+    int second_team = this->reg(str.substr(delim_idx + 1, std::string::npos));
+    if(update_points)
+    {
+        if(str[delim_idx] == '=')
+        {
+            this->team_points[first_team] += this->points_other;
+            this->team_points[second_team] += this->points_other;
+        }
+        else
+        {
+            this->team_points[first_team] += this->points_win;
+            this->team_points[second_team] += this->points_lose;
+        }
+    }
+    else
+    {
+        this->fixtures_upcoming.push_back({first_team, second_team, -1});
+    }
+}
+
+/******************************************************************************
+ * Register a team by generating an ID for it if it isn't already registered.
+ *
+ * @param tname Team name.
+ *
+ * @return Team ID.
+ *****************************************************************************/
+int
+PointsTableProjector::reg(std::string const& tname)
+{
+    if(this->team_id.find(tname) == this->team_id.end())
+    {
+        this->team_id.insert({tname, this->team_id.size()});
+        this->team_points.push_back(0);
+    }
+    return this->team_id[tname];
 }
 
 /******************************************************************************
