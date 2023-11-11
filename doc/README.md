@@ -10,3 +10,7 @@ Must be followed by a space and a number indicating how many points are earned b
 
 ### `points.lose`
 Must be followed by a space and a number indicating how many points are earned by the loser of a match.
+
+### `points.other`
+Must be followed by a space and a number indicating how many points are earned by each of the two teams if their match
+was drawn or tied or similar.
