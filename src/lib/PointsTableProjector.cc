@@ -109,6 +109,10 @@ PointsTableProjector::parse(void)
         THROW(std::runtime_error, message);
     }
     this->my_tid = tname_tid_it->second;
+    if(this->fixtures_upcoming.empty())
+    {
+        THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
+    }
 }
 
 /******************************************************************************
@@ -207,14 +211,37 @@ PointsTableProjector::debug(void)
         {
             std::clog << '*';
         }
-        std::clog << teams[i].name << ':' << teams[i].points;
+        std::clog << teams[i].tname << ':' << teams[i].points;
     }
     std::clog << '\n';
 
     std::clog << "Upcoming:";
     for(auto const& fixture: this->fixtures_upcoming)
     {
-        std::clog << ' ' << fixture.a.name << ',' << fixture.b.name;
+        std::clog << ' ' << fixture.a.tname << ',' << fixture.b.tname;
     }
     std::clog << '\n';
+}
+
+/******************************************************************************
+ * Find the best result for the team being tracked over the upcoming fixtures.
+ *****************************************************************************/
+void
+PointsTableProjector::solve(void)
+{
+    this->solve_(0);
+}
+
+/******************************************************************************
+ * Find the best result for the team being tracked over the upcoming fixtures
+ * starting from the given index.
+ *
+ * @param idx
+ *****************************************************************************/
+void
+PointsTableProjector::solve_(std::size_t idx)
+{
+    if(idx >= this->fixtures_upcoming.size())
+    {
+    }
 }

@@ -15,4 +15,5 @@ main(int const argc, char const *argv[])
         return EXIT_FAILURE;
     }
     PointsTableProjector projector(argv[1]);
+    projector.solve();
 }

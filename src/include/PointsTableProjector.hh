@@ -13,11 +13,15 @@ class PointsTableProjector
 {
     public:
     PointsTableProjector(std::string const& fname);
+    void debug(void);
+    void solve(void);
+
+    private:
     void parse(void);
     void parse_int(char const *str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
     std::size_t reg(std::string const& tname);
-    void debug(void);
+    void solve_(std::size_t idx);
 
     private:
     std::string const fname;

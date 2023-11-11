@@ -6,9 +6,10 @@
 /******************************************************************************
  * Constructor.
  *
- * @param name
+ * @param tname Team name.
+ * @param it Team ID.
  *****************************************************************************/
-Team::Team(std::string const& name, std::size_t id)
-: name(name), id(id)
+Team::Team(std::string const& tname, std::size_t tid)
+: tname(tname), tid(tid)
 {
 }

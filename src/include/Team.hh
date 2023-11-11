@@ -9,11 +9,11 @@
  *****************************************************************************/
 struct Team
 {
-    std::string const name;
-    std::size_t const id;
+    std::string const tname;
+    std::size_t const tid;
     int points = 0;
 
-    Team(std::string const& name, std::size_t id);
+    Team(std::string const& tname, std::size_t tid);
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_TEAM_HH_
