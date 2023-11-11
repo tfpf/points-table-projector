@@ -97,6 +97,11 @@ PointsTableProjector::parse(void)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
+    if(my_tname.empty())
+    {
+        std::string message = "Team to track not specified in '" + this->fname + "'.";
+        THROW(std::runtime_error, message);
+    }
     auto tname_tid_it = this->tname_tid.find(my_tname);
     if(tname_tid_it == this->tname_tid.end())
     {
@@ -174,12 +179,15 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 std::size_t
 PointsTableProjector::reg(std::string const& tname)
 {
-    if(this->tname_tid.find(tname) == this->tname_tid.end())
+    auto tname_tid_it = this->tname_tid.find(tname);
+    if(tname_tid_it == this->tname_tid.end())
     {
-        this->tname_tid.insert({tname, this->tname_tid.size()});
-        this->teams.emplace_back(Team(tname));
+        std::size_t tid = this->tname_tid.size();
+        this->tname_tid.insert({tname, tid});
+        this->teams.emplace_back(Team(tname, tid));
+        return tid;
     }
-    return this->tname_tid[tname];
+    return tname_tid_it->second;
 }
 
 /******************************************************************************
