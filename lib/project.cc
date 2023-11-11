@@ -110,9 +110,9 @@ PointsTableProjector::parse(void)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    if(this->team_id.empty())
+    if(this->fixtures_upcoming.empty())
     {
-        THROW(std::runtime_error, "No fixtures specified in '" + this->fname + "'.");
+        THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
     }
 }
 
