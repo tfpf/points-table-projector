@@ -32,7 +32,7 @@ class PointsTableProjector
     std::size_t my_tid = 0;
     std::unordered_map<std::string, std::size_t const> tname_tid;
     std::vector<Team> teams;
-    std::vector<Fixture> fixtures_upcoming;
+    std::vector<Fixture> fixtures;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_

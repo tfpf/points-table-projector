@@ -74,6 +74,8 @@ PointsTableProjector::parse(void)
         }
         if(readline == "fixtures.completed")
         {
+            // Do not store these. Just calculate the points earned by each
+            // team.
             while(std::getline(fhandle, readline) && !readline.empty())
             {
                 ++this->line_number;
@@ -84,6 +86,7 @@ PointsTableProjector::parse(void)
         }
         if(readline == "fixtures.upcoming")
         {
+            // Store these so that their results may be simulated.
             while(std::getline(fhandle, readline) && !readline.empty())
             {
                 ++this->line_number;
@@ -108,7 +111,7 @@ PointsTableProjector::parse(void)
         THROW(std::runtime_error, message);
     }
     this->my_tid = tname_tid_it->second;
-    if(this->fixtures_upcoming.empty())
+    if(this->fixtures.empty())
     {
         THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
     }
@@ -168,12 +171,13 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
     }
     else
     {
-        this->fixtures_upcoming.emplace_back(Fixture(this->teams[first_tid], this->teams[second_tid]));
+        this->fixtures.emplace_back(Fixture(this->teams[first_tid], this->teams[second_tid]));
     }
 }
 
 /******************************************************************************
  * Register a team by generating an ID for it if it isn't already registered.
+ * The ID is the index at which this team is inserted.
  *
  * @param tname Team name.
  *
@@ -215,7 +219,7 @@ PointsTableProjector::debug(void)
     std::clog << '\n';
 
     std::clog << "Upcoming:";
-    for(auto const& fixture: this->fixtures_upcoming)
+    for(auto const& fixture: this->fixtures)
     {
         std::clog << ' ' << fixture;
     }
@@ -223,7 +227,7 @@ PointsTableProjector::debug(void)
 }
 
 /******************************************************************************
- * Find the best result for the team being tracked over the upcoming fixtures.
+ * Find all possible results for the team being tracked.
  *****************************************************************************/
 void
 PointsTableProjector::solve(void)
@@ -232,15 +236,15 @@ PointsTableProjector::solve(void)
 }
 
 /******************************************************************************
- * Find the best result for the team being tracked over the upcoming fixtures
- * starting from the given index.
+ * Find all possible results for the team being tracked starting from the
+ * specified fixture, and assuming they win all their fixtures.
  *
- * @param idx
+ * @param idx Fixture index.
  *****************************************************************************/
 void
 PointsTableProjector::solve_(std::size_t idx)
 {
-    if(idx >= this->fixtures_upcoming.size())
+    if(idx >= this->fixtures.size())
     {
         int rank = 1;
         int my_points = this->teams[this->my_tid].points;
@@ -252,14 +256,14 @@ PointsTableProjector::solve_(std::size_t idx)
             }
         }
         std::cout << rank << " with";
-        for(auto const& fixture: this->fixtures_upcoming)
+        for(auto const& fixture: this->fixtures)
         {
             std::cout << ' ' << fixture;
         }
         std::cout << '\n';
         return;
     }
-    Fixture& fixture = this->fixtures_upcoming[idx];
+    Fixture& fixture = this->fixtures[idx];
     if(fixture.a.tid != this->my_tid)
     {
         fixture.ordered = false;
