@@ -6,11 +6,13 @@ avoid leading and trailing spaces.
 A list of keywords follows.
 
 ### `points.win`
-Must be followed by a space and a number indicating how many points are earned by the winner of a match.
+Must be followed by a space and a number indicating how many points are earned by the winner of a match. Optional;
+defaults to 2.
 
 ### `points.lose`
-Must be followed by a space and a number indicating how many points are earned by the loser of a match.
+Must be followed by a space and a number indicating how many points are earned by the loser of a match. Optional;
+defaults to 0.
 
 ### `points.other`
 Must be followed by a space and a number indicating how many points are earned by each of the two teams if their match
-was drawn or tied or similar.
+was drawn or tied or similar. Optional; defaults to 1.
