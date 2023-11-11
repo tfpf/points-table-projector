@@ -1,13 +1,13 @@
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 #include "PointsTableProjector.hh"
+#include "Team.hh"
 
 #define THROW(exc, msg)  \
 do  \
@@ -96,17 +96,13 @@ PointsTableProjector::parse(void)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    auto my_tname_tid = this->tname_tid.find(my_tname);
-    if(my_tname_tid == this->tname_tid.end())
+    auto tname_tid_it = this->tname_tid.find(my_tname);
+    if(tname_tid_it == this->tname_tid.end())
     {
         std::string message = "No fixtures involving '" + my_tname + "' found in '" + this->fname + "'.";
         THROW(std::runtime_error, message);
     }
-    this->my_tid = my_tname_tid->second;
-    if(this->fixtures_upcoming.empty())
-    {
-        THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
-    }
+    this->my_tid = tname_tid_it->second;
 }
 
 /******************************************************************************
@@ -146,24 +142,23 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    int first_team = this->reg(str.substr(0, delim_idx));
-    int second_team = this->reg(str.substr(delim_idx + 1, std::string::npos));
+    int first_tid = this->reg(str.substr(0, delim_idx));
+    int second_tid = this->reg(str.substr(delim_idx + 1, std::string::npos));
     if(update_points)
     {
         if(str[delim_idx] == '=')
         {
-            this->tid_points[first_team] += this->points_other;
-            this->tid_points[second_team] += this->points_other;
+            this->teams[first_tid].points += this->points_other;
+            this->teams[second_tid].points += this->points_other;
         }
         else
         {
-            this->tid_points[first_team] += this->points_win;
-            this->tid_points[second_team] += this->points_lose;
+            this->teams[first_tid].points += this->points_win;
+            this->teams[second_tid].points += this->points_lose;
         }
     }
     else
     {
-        this->fixtures_upcoming.push_back({first_team, second_team, -1});
     }
 }
 
@@ -180,7 +175,7 @@ PointsTableProjector::reg(std::string const& tname)
     if(this->tname_tid.find(tname) == this->tname_tid.end())
     {
         this->tname_tid.insert({tname, this->tname_tid.size()});
-        this->tid_points.push_back(0);
+        this->teams.emplace_back(Team(tname));
     }
     return this->tname_tid[tname];
 }
@@ -191,18 +186,18 @@ PointsTableProjector::reg(std::string const& tname)
 void
 PointsTableProjector::debug(void)
 {
-    std::clog << "input file: '" << this->fname << "'\n";
-    std::clog << "points: (" << this->points_win << ", " << this->points_lose << ", " << this->points_other << ")\n";
+    std::clog << "File: '" << this->fname << "'\n";
+    std::clog << "Points: (" << this->points_win << ", " << this->points_lose << ", " << this->points_other << ")\n";
 
-    std::clog << "teams:";
-    for(auto const& item: this->tname_tid)
+    std::clog << "Teams:";
+    for(int i = 0, iub = this->teams.size(); i < iub; ++i)
     {
         std::clog << ' ';
-        if(item.second == this->my_tid)
+        if(i == this->my_tid)
         {
             std::clog << '*';
         }
-        std::clog << item.first << "(id=" << item.second << ", points=" << this->tid_points[item.second] << ')';
+        std::clog << teams[i].name << ':' << teams[i].points;
     }
     std::clog << '\n';
 }

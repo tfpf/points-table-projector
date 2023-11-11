@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Team.hh"
+
 class PointsTableProjector
 {
     public:
@@ -23,8 +25,7 @@ class PointsTableProjector
     int points_other = 1;
     int my_tid = 0;
     std::unordered_map<std::string, int const> tname_tid;
-    std::vector<int> tid_points;
-    std::vector<std::vector<int>> fixtures_upcoming;
+    std::vector<Team> teams;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
