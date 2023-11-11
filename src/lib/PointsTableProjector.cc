@@ -211,14 +211,14 @@ PointsTableProjector::debug(void)
         {
             std::clog << '*';
         }
-        std::clog << teams[i].tname << ':' << teams[i].points;
+        std::clog << teams[i];
     }
     std::clog << '\n';
 
     std::clog << "Upcoming:";
     for(auto const& fixture: this->fixtures_upcoming)
     {
-        std::clog << ' ' << fixture.a.tname << ',' << fixture.b.tname;
+        std::clog << ' ' << fixture;
     }
     std::clog << '\n';
 }
@@ -243,5 +243,10 @@ PointsTableProjector::solve_(std::size_t idx)
 {
     if(idx >= this->fixtures_upcoming.size())
     {
+        int higher_scores = 0;
+        for(auto const& team: this->teams)
+        {
+            ;
+        }
     }
 }
