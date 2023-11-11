@@ -23,10 +23,10 @@ Must be followed by a space and the name of the team whose possible outcomes you
 #### `fixtures.completed`
 Must be followed by a list of matches which have already been played. Each match must be on a separate line. The end of
 the list is indicated by a blank line. A match is described by the names of the two teams who played, separated by a
-comma (`,`). The name of the winning team should be written first. If neither team won (e.g. if the match was tied),
-an equals sign (`=`) must separate them. No spaces must be added.
+comma <kbd>,</kbd>. The name of the winning team should be written first. If neither team won (e.g. if the match was
+tied), an equals sign <kbd>=</kbd> must separate them. No spaces must be added.
 
 #### `fixtures.upcoming`
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
 list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
-comma (`,`). No spaces must be added.
+comma <kbd>,</kbd>. No spaces must be added.
