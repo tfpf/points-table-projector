@@ -26,7 +26,6 @@ PointsTableProjector::PointsTableProjector(std::string const& fname)
 : fname(fname)
 {
     this->parse();
-    this->debug();
 }
 
 /******************************************************************************
@@ -243,10 +242,40 @@ PointsTableProjector::solve_(std::size_t idx)
 {
     if(idx >= this->fixtures_upcoming.size())
     {
-        int higher_scores = 0;
+        int rank = 1;
+        int my_points = this->teams[this->my_tid].points;
         for(auto const& team: this->teams)
         {
-            ;
+            if(team.tid != this->my_tid && team.points > my_points)
+            {
+                ++rank;
+            }
         }
+        std::cout << rank << " with";
+        for(auto const& fixture: this->fixtures_upcoming)
+        {
+            std::cout << ' ' << fixture;
+        }
+        std::cout << '\n';
+        return;
+    }
+    Fixture& fixture = this->fixtures_upcoming[idx];
+    if(fixture.a.tid != this->my_tid)
+    {
+        fixture.ordered = false;
+        fixture.a.points += this->points_lose;
+        fixture.b.points += this->points_win;
+        this->solve_(idx + 1);
+        fixture.a.points -= this->points_lose;
+        fixture.b.points -= this->points_win;
+    }
+    if(fixture.b.tid != this->my_tid)
+    {
+        fixture.ordered = true;
+        fixture.a.points += this->points_win;
+        fixture.b.points += this->points_lose;
+        this->solve_(idx + 1);
+        fixture.a.points -= this->points_win;
+        fixture.b.points -= this->points_lose;
     }
 }
