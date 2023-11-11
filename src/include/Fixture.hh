@@ -3,6 +3,11 @@
 
 #include "Team.hh"
 
+/******************************************************************************
+ * Store information about a fixture. The members are two objects which do not
+ * belong to this object. Their lifetime (and indeed the lifetime of this
+ * object) is entirely controlled by the class which instantiates them.
+ *****************************************************************************/
 struct Fixture
 {
     Team& a;

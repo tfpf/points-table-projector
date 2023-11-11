@@ -4,10 +4,13 @@
 #include <cstddef>
 #include <string>
 
+/******************************************************************************
+ * Store information about a team.
+ *****************************************************************************/
 struct Team
 {
     std::string const name;
-    std::size_t id;
+    std::size_t const id;
     int points = 0;
 
     Team(std::string const& name, std::size_t id);
