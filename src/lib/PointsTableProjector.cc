@@ -255,6 +255,8 @@ PointsTableProjector::solve_(std::size_t idx)
         this->dump();
         return;
     }
+
+    // In all simulations, assume that the team being tracked wins.
     Fixture& fixture = this->fixtures[idx];
     if(fixture.a.tid != this->my_tid)
     {
