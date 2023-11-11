@@ -2,6 +2,8 @@ points.win 2
 points.lose 0
 points.other 1
 
+team NewZealand
+
 fixtures.completed
 NewZealand,England
 Pakistan,Netherlands

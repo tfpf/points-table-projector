@@ -25,6 +25,7 @@ class PointsTableProjector
     void parse_int(char const *str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
     int reg(std::string const& tname);
+    void debug(void);
 
     private:
     std::string const fname;
@@ -32,8 +33,9 @@ class PointsTableProjector
     int points_win = 2;
     int points_lose = 0;
     int points_other = 1;
-    std::unordered_map<std::string, int const> team_id;
-    std::vector<int> team_points;
+    int my_tid = 0;
+    std::unordered_map<std::string, int const> tname_tid;
+    std::vector<int> tid_points;
     std::vector<std::vector<int>> fixtures_upcoming;
 };
 
@@ -46,6 +48,7 @@ PointsTableProjector::PointsTableProjector(std::string const& fname)
 : fname(fname)
 {
     this->parse();
+    this->debug();
 }
 
 /******************************************************************************
@@ -59,6 +62,7 @@ PointsTableProjector::parse(void)
     {
         THROW(std::runtime_error, "Could not read '" + this->fname + "'.");
     }
+    std::string my_tname;
     while(true)
     {
         std::string readline;
@@ -86,6 +90,11 @@ PointsTableProjector::parse(void)
             this->parse_int(&readline[12], this->points_other);
             continue;
         }
+        if(readline.rfind("team ", 0) == 0)
+        {
+            my_tname = readline.substr(5, std::string::npos);
+            continue;
+        }
         if(readline == "fixtures.completed")
         {
             while(std::getline(fhandle, readline) && !readline.empty())
@@ -110,6 +119,13 @@ PointsTableProjector::parse(void)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
+    auto my_tname_tid = this->tname_tid.find(my_tname);
+    if(my_tname_tid == this->tname_tid.end())
+    {
+        std::string message = "No fixtures involving '" + my_tname + "' found in '" + this->fname + "'.";
+        THROW(std::runtime_error, message);
+    }
+    this->my_tid = my_tname_tid->second;
     if(this->fixtures_upcoming.empty())
     {
         THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
@@ -159,13 +175,13 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
     {
         if(str[delim_idx] == '=')
         {
-            this->team_points[first_team] += this->points_other;
-            this->team_points[second_team] += this->points_other;
+            this->tid_points[first_team] += this->points_other;
+            this->tid_points[second_team] += this->points_other;
         }
         else
         {
-            this->team_points[first_team] += this->points_win;
-            this->team_points[second_team] += this->points_lose;
+            this->tid_points[first_team] += this->points_win;
+            this->tid_points[second_team] += this->points_lose;
         }
     }
     else
@@ -184,12 +200,34 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 int
 PointsTableProjector::reg(std::string const& tname)
 {
-    if(this->team_id.find(tname) == this->team_id.end())
+    if(this->tname_tid.find(tname) == this->tname_tid.end())
     {
-        this->team_id.insert({tname, this->team_id.size()});
-        this->team_points.push_back(0);
+        this->tname_tid.insert({tname, this->tname_tid.size()});
+        this->tid_points.push_back(0);
     }
-    return this->team_id[tname];
+    return this->tname_tid[tname];
+}
+
+/******************************************************************************
+ * Display all members.
+ *****************************************************************************/
+void
+PointsTableProjector::debug(void)
+{
+    std::clog << "input file: '" << this->fname << "'\n";
+    std::clog << "points: (" << this->points_win << ", " << this->points_lose << ", " << this->points_other << ")\n";
+
+    std::clog << "teams:";
+    for(auto const& item: this->tname_tid)
+    {
+        std::clog << ' ';
+        if(item.second == this->my_tid)
+        {
+            std::clog << '*';
+        }
+        std::clog << item.first << "(id=" << item.second << ", points=" << this->tid_points[item.second] << ')';
+    }
+    std::clog << '\n';
 }
 
 /******************************************************************************
