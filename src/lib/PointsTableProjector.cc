@@ -7,37 +7,14 @@
 #include <unordered_map>
 #include <vector>
 
+#include "PointsTableProjector.hh"
+
 #define THROW(exc, msg)  \
 do  \
 {  \
     throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);  \
 }  \
 while(false)
-
-/******************************************************************************
- * Determine the best outcome for a team in an ongoing tournament.
- *****************************************************************************/
-class PointsTableProjector
-{
-    public:
-    PointsTableProjector(std::string const& fname);
-    void parse(void);
-    void parse_int(char const *str, int& var);
-    void parse_fixture(std::string const& str, bool update_points);
-    int reg(std::string const& tname);
-    void debug(void);
-
-    private:
-    std::string const fname;
-    int line_number = 0;
-    int points_win = 2;
-    int points_lose = 0;
-    int points_other = 1;
-    int my_tid = 0;
-    std::unordered_map<std::string, int const> tname_tid;
-    std::vector<int> tid_points;
-    std::vector<std::vector<int>> fixtures_upcoming;
-};
 
 /******************************************************************************
  * Constructor.
@@ -228,17 +205,4 @@ PointsTableProjector::debug(void)
         std::clog << item.first << "(id=" << item.second << ", points=" << this->tid_points[item.second] << ')';
     }
     std::clog << '\n';
-}
-
-/******************************************************************************
- * Main function.
- *****************************************************************************/
-int
-main(int const argc, char const *argv[])
-{
-    if(argc < 2)
-    {
-        THROW(std::invalid_argument, "Input file not specified.");
-    }
-    PointsTableProjector projector(argv[1]);
 }
