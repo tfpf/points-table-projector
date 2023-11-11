@@ -25,11 +25,11 @@ operator<<(std::ostream& ostream, Fixture const& fixture)
 {
     if(fixture.ordered)
     {
-        ostream << fixture.a.tname << ':' << fixture.b.tname;
+        ostream << fixture.a.tname << ',' << fixture.b.tname;
     }
     else
     {
-        ostream << fixture.b.tname << ':' << fixture.a.tname;
+        ostream << fixture.b.tname << ',' << fixture.a.tname;
     }
     return ostream;
 }

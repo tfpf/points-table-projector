@@ -13,7 +13,7 @@ class PointsTableProjector
 {
     public:
     PointsTableProjector(std::string const& fname);
-    void debug(void);
+    void dump(void);
     void solve(void);
 
     private:

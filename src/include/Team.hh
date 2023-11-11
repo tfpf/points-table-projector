@@ -10,8 +10,8 @@
  *****************************************************************************/
 struct Team
 {
-    std::string const tname;
-    std::size_t const tid;
+    std::string tname;
+    std::size_t tid;
     int points = 0;
 
     Team(std::string const& tname, std::size_t tid);

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
@@ -147,7 +148,7 @@ PointsTableProjector::parse_int(char const *str, int& intvar)
 void
 PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 {
-    auto delim_idx = str.find_first_of(",=");
+    std::size_t delim_idx = str.find_first_of(",=");
     if(delim_idx == std::string::npos)
     {
         std::string message = "Neither ',' nor '=' found in '" + this->fname;
@@ -198,32 +199,37 @@ PointsTableProjector::reg(std::string const& tname)
 }
 
 /******************************************************************************
- * Display all members.
+ * Display some members in readable form.
  *****************************************************************************/
 void
-PointsTableProjector::debug(void)
+PointsTableProjector::dump(void)
 {
-    std::clog << "File: '" << this->fname << "'\n";
-    std::clog << "Points: (" << this->points_win << ", " << this->points_lose << ", " << this->points_other << ")\n";
-
-    std::clog << "Teams:";
-    for(std::size_t i = 0; i < this->teams.size(); ++i)
+    std::vector<Team> teams(this->teams);
+    std::sort(teams.rbegin(), teams.rend(), [&](Team const& a, Team const& b)
     {
-        std::clog << ' ';
-        if(i == this->my_tid)
+        if(a.points > b.points)
         {
-            std::clog << '*';
+            return false;
         }
-        std::clog << teams[i];
-    }
-    std::clog << '\n';
-
-    std::clog << "Upcoming:";
-    for(auto const& fixture: this->fixtures)
+        if(a.points < b.points || b.tid == this->my_tid)
+        {
+            return true;
+        }
+        return false;
+    });
+    int rank = 0;
+    while(teams[rank++].tid != this->my_tid);
+    std::cout << rank << '\n';
+    std::cout << "  fixtures.results\n";
+    for(Team const& team: teams)
     {
-        std::clog << ' ' << fixture;
+        std::cout << "    " << team << '\n';
     }
-    std::clog << '\n';
+    std::cout << "  fixtures.upcoming\n";
+    for(Fixture const& fixture: this->fixtures)
+    {
+        std::cout << "    " << fixture << '\n';
+    }
 }
 
 /******************************************************************************
@@ -246,21 +252,7 @@ PointsTableProjector::solve_(std::size_t idx)
 {
     if(idx >= this->fixtures.size())
     {
-        int rank = 1;
-        int my_points = this->teams[this->my_tid].points;
-        for(auto const& team: this->teams)
-        {
-            if(team.tid != this->my_tid && team.points > my_points)
-            {
-                ++rank;
-            }
-        }
-        std::cout << rank << " with";
-        for(auto const& fixture: this->fixtures)
-        {
-            std::cout << ' ' << fixture;
-        }
-        std::cout << '\n';
+        this->dump();
         return;
     }
     Fixture& fixture = this->fixtures[idx];
