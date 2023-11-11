@@ -20,14 +20,14 @@ while(false)
 class PointsTableProjector
 {
     public:
-    PointsTableProjector(char const *fname);
+    PointsTableProjector(std::string const& fname);
     void parse(void);
     void parse_int(char const *str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
     int reg(std::string const& tname);
 
     private:
-    char const *fname;
+    std::string const fname;
     int line_number = 0;
     int points_win = 2;
     int points_lose = 0;
@@ -42,9 +42,9 @@ class PointsTableProjector
  *
  * @param fname Input file name.
  *****************************************************************************/
-PointsTableProjector::PointsTableProjector(char const *fname)
+PointsTableProjector::PointsTableProjector(std::string const& fname)
+: fname(fname)
 {
-    this->fname = fname;
     this->parse();
 }
 
@@ -106,9 +106,13 @@ PointsTableProjector::parse(void)
             ++this->line_number;
             continue;
         }
-        std::string message("Unknown keyword in '");
-        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
+        std::string message = "Unknown keyword in '" + this->fname;
+        message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
+    }
+    if(this->team_id.empty())
+    {
+        THROW(std::runtime_error, "No fixtures specified in '" + this->fname + "'.");
     }
 }
 
@@ -127,8 +131,8 @@ PointsTableProjector::parse_int(char const *str, int& intvar)
     }
     catch(std::exception& e)
     {
-        std::string message("Integer parse failure in '");
-        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
+        std::string message = "Integer parse failure in '" + this->fname;
+        message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
 }
@@ -145,8 +149,8 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
     auto delim_idx = str.find_first_of(",=");
     if(delim_idx == std::string::npos)
     {
-        std::string message("Neither ',' nor '=' found in '");
-        message += std::string(this->fname) + "' on line " + std::to_string(this->line_number) + '.';
+        std::string message = "Neither ',' nor '=' found in '" + this->fname;
+        message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
     int first_team = this->reg(str.substr(0, delim_idx));
