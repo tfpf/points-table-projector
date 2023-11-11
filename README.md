@@ -2,14 +2,14 @@
 Determine the best outcomes for a team in an ongoing tournament.
 
 ## Compile
-```console
+```shell
 make -j
 ```
 
 ## Run
 Specify the path to a file describing the tournament as the first argument. For instance, to find out New Zealand's
 best possible outcomes in the 2023 Cricket World Cup as of 4 November 2023, run the following command.
-```console
+```shell
 ./project examples/cricket_world_cup_2023.txt
 ```
 
