@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "Fixture.hh"
 #include "PointsTableProjector.hh"
 #include "Team.hh"
 
@@ -142,8 +143,8 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    int first_tid = this->reg(str.substr(0, delim_idx));
-    int second_tid = this->reg(str.substr(delim_idx + 1, std::string::npos));
+    std::size_t first_tid = this->reg(str.substr(0, delim_idx));
+    std::size_t second_tid = this->reg(str.substr(delim_idx + 1, std::string::npos));
     if(update_points)
     {
         if(str[delim_idx] == '=')
@@ -159,6 +160,7 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
     }
     else
     {
+        this->fixtures_upcoming.emplace_back(Fixture(this->teams[first_tid], this->teams[second_tid]));
     }
 }
 
@@ -169,7 +171,7 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
  *
  * @return Team ID.
  *****************************************************************************/
-int
+std::size_t
 PointsTableProjector::reg(std::string const& tname)
 {
     if(this->tname_tid.find(tname) == this->tname_tid.end())
@@ -190,7 +192,7 @@ PointsTableProjector::debug(void)
     std::clog << "Points: (" << this->points_win << ", " << this->points_lose << ", " << this->points_other << ")\n";
 
     std::clog << "Teams:";
-    for(int i = 0, iub = this->teams.size(); i < iub; ++i)
+    for(std::size_t i = 0; i < this->teams.size(); ++i)
     {
         std::clog << ' ';
         if(i == this->my_tid)
@@ -198,6 +200,13 @@ PointsTableProjector::debug(void)
             std::clog << '*';
         }
         std::clog << teams[i].name << ':' << teams[i].points;
+    }
+    std::clog << '\n';
+
+    std::clog << "Upcoming:";
+    for(auto const& fixture: this->fixtures_upcoming)
+    {
+        std::clog << ' ' << fixture.a.name << ',' << fixture.b.name;
     }
     std::clog << '\n';
 }
