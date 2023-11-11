@@ -1,3 +1,6 @@
+#ifndef TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
+#define TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -23,3 +26,5 @@ class PointsTableProjector
     std::vector<int> tid_points;
     std::vector<std::vector<int>> fixtures_upcoming;
 };
+
+#endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
