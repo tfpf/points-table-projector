@@ -18,7 +18,7 @@ Fixture::Fixture(Team& a, Team& b)
  * Formatter.
  *
  * @param ostream
- * @param team
+ * @param fixture
  *****************************************************************************/
 std::ostream&
 operator<<(std::ostream& ostream, Fixture const& fixture)

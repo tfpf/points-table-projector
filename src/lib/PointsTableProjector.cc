@@ -43,7 +43,7 @@ PointsTableProjector::parse(void)
     {
         THROW(std::runtime_error, "Could not read '" + this->fname + "'.");
     }
-    std::string my_tname;
+    std::string favourite_tname;
     while(true)
     {
         std::string readline;
@@ -73,7 +73,7 @@ PointsTableProjector::parse(void)
         }
         if(readline.rfind("team ", 0) == 0)
         {
-            my_tname = readline.substr(5, std::string::npos);
+            favourite_tname = readline.substr(5, std::string::npos);
             continue;
         }
         if(readline == "fixtures.completed")
@@ -103,18 +103,18 @@ PointsTableProjector::parse(void)
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
-    if(my_tname.empty())
+    if(favourite_tname.empty())
     {
-        std::string message = "Team to track not specified in '" + this->fname + "'.";
+        std::string message = "Favourite team not specified in '" + this->fname + "'.";
         THROW(std::runtime_error, message);
     }
-    auto tname_tid_it = this->tname_tid.find(my_tname);
+    auto tname_tid_it = this->tname_tid.find(favourite_tname);
     if(tname_tid_it == this->tname_tid.end())
     {
-        std::string message = "No fixtures involving '" + my_tname + "' found in '" + this->fname + "'.";
+        std::string message = "No fixtures involving '" + favourite_tname + "' found in '" + this->fname + "'.";
         THROW(std::runtime_error, message);
     }
-    this->my_tid = tname_tid_it->second;
+    this->favourite_tid = tname_tid_it->second;
     if(this->fixtures.empty())
     {
         THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
@@ -214,14 +214,14 @@ PointsTableProjector::dump(void)
         {
             return false;
         }
-        if(a.points < b.points || b.tid == this->my_tid)
+        if(a.points < b.points || b.tid == this->favourite_tid)
         {
             return true;
         }
         return false;
     });
     int rank = 0;
-    while(teams[rank++].tid != this->my_tid);
+    while(teams[rank++].tid != this->favourite_tid);
     std::cout << rank << '\n';
     std::cout << "  fixtures.results\n";
     for(Team const& team: teams)
@@ -236,7 +236,7 @@ PointsTableProjector::dump(void)
 }
 
 /******************************************************************************
- * Find all possible results for the team being tracked.
+ * Find all possible results for our favourite team.
  *****************************************************************************/
 void
 PointsTableProjector::solve(void)
@@ -245,8 +245,8 @@ PointsTableProjector::solve(void)
 }
 
 /******************************************************************************
- * Find all possible results for the team being tracked starting from the
- * specified fixture, and assuming they win all their fixtures.
+ * Find all possible results for our favourite team starting from the specified
+ * fixture, and assuming they win all their fixtures.
  *
  * @param idx Fixture index.
  *****************************************************************************/
@@ -258,10 +258,8 @@ PointsTableProjector::solve_(std::size_t idx)
         this->dump();
         return;
     }
-
-    // In all simulations, assume that the team being tracked wins.
     Fixture& fixture = this->fixtures[idx];
-    if(fixture.a.tid != this->my_tid)
+    if(fixture.a.tid != this->favourite_tid)
     {
         fixture.ordered = false;
         fixture.a.points += this->points_lose;
@@ -270,7 +268,7 @@ PointsTableProjector::solve_(std::size_t idx)
         fixture.a.points -= this->points_lose;
         fixture.b.points -= this->points_win;
     }
-    if(fixture.b.tid != this->my_tid)
+    if(fixture.b.tid != this->favourite_tid)
     {
         fixture.ordered = true;
         fixture.a.points += this->points_win;

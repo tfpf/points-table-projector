@@ -29,9 +29,11 @@ class PointsTableProjector
     int points_win = 2;
     int points_lose = 0;
     int points_other = 1;
-    std::size_t my_tid = 0;
+    std::size_t favourite_tid = 0;
+    // Mapping between team names and team IDs.
     std::unordered_map<std::string, std::size_t const> tname_tid;
     std::vector<Team> teams;
+    // Upcoming fixtures. (Completed fixtures are not stored.)
     std::vector<Fixture> fixtures;
 };
 
