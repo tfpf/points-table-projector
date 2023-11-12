@@ -34,6 +34,9 @@ comma <kbd>,</kbd>.
   * Remember, however, that the `fixtures.completed` list is terminated with a blank line, as mentioned above.
 * Spaces at the start and end of a line are not stripped. They will be treated as parts of the words written on that
   line. This can lead to unexpected behaviour. Hence, spaces must be avoided except as noted above.
+* The maximum number of teams supported is 1024.
+  * This is not a hard limit. You can increase it simply by changing the number in the constructor of
+    `PointsTableProjector`.
 
 ## Example
 Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Our favourite team is Banana.
