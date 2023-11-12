@@ -38,19 +38,19 @@ comma <kbd>,</kbd>.
 ## Example
 Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Four matches have been played.
 
-0. Apple beat Orange;
-0. Guava beat Banana;
-0. Guava beat Orange; and
-0. Oange beat Banana.
+1. Apple beat Orange;
+1. Guava beat Banana;
+1. Guava beat Orange; and
+1. Oange beat Banana.
 
 Six matches remain.
 
-0. Apple v/s Guava;
-0. Jackfruit v/s Apple;
-0. Orange v/s Jackfruit;
-0. Guava v/s Jackfruit;
-0. Banana v/s Apple; and
-0. Jackfruit v/s Banana.
+1. Apple v/s Guava;
+1. Jackfruit v/s Apple;
+1. Orange v/s Jackfruit;
+1. Guava v/s Jackfruit;
+1. Banana v/s Apple; and
+1. Jackfruit v/s Banana.
 
 ```
 team Banana
