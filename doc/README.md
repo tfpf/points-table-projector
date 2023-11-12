@@ -36,7 +36,9 @@ comma <kbd>,</kbd>.
   line. This can lead to unexpected behaviour. Hence, spaces must be avoided except as noted above.
 
 ## Example
-Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Four matches have been played.
+Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Our favourite team is Banana.
+
+Four matches have been played.
 
 1. Apple beat Orange;
 1. Guava beat Banana;
