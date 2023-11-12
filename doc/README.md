@@ -78,7 +78,7 @@ them.
 
 <details>
 
-<summary>Click to view.</summary>
+<summary>Click to view the output.</summary>
 
 ```
 2
