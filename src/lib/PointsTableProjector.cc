@@ -26,6 +26,9 @@ while(false)
 PointsTableProjector::PointsTableProjector(std::string const& fname)
 : fname(fname)
 {
+    // Prevent reallocation in this member, because we are going to store
+    // references to its elements in another member.
+    this->teams.reserve(1024);
     this->parse();
 }
 
