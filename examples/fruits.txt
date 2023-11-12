@@ -1,0 +1,15 @@
+team Banana
+
+fixtures.completed
+Apple,Orange
+Apple,Guava
+Guava,Banana
+Guava,Orange
+Orange,Banana
+
+fixtures.upcoming
+Jackfruit,Apple
+Banana,Apple
+Orange,Jackfruit
+Guava,Jackfruit
+Jackfruit,Banana
