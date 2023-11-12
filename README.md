@@ -1,6 +1,8 @@
 # Points Table Projector
 Determine the best outcomes for a team in an ongoing tournament.
 
+![build](https://github.com/tfpf/points-table-projector/actions/workflows/build.yml/badge.svg)
+
 ## Compile
 ```shell
 make -j
