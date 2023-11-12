@@ -189,18 +189,18 @@ them.
 
 </details>
 
-In the first scenario, Banana will finish at position 2.
+In the last (i.e. eighth) scenario, Banana will finish at position 2.
 
-The final points table is shown under `fixtures.results`. Banana get 4 points in all. Apple top the table with 6
-points. Guava, Jackfruit and Orange end up with 4, 4 and 2 points respectively.
+The final points table is shown under `fixtures.results`. Banana get 4 points in all. Guava top the table with 6
+points. Apple, Orange and Jackfruit end up with 4, 4 and 2 points respectively.
 
 For the tournament to end like this, the events that must transpire are under `fixtures.upcoming`, with the name of the
 winning team written first.
-* Apple must beat Jackfruit;
-* Jackfruit must beat Orange and Guava; and
+* Jackfruit must beat Apple;
+* Orange and Guava must beat Jackfruit; and
 * Banana must beat Apple and Jackfruit.
 
-Although Banana, Guava and Jackfruit have the same points at the end, Banana is placed highest among them because the
+Although Banana, Apple and Orange have the same points at the end, Banana is placed highest among them because the
 program is written to calculate the _best_ outcome for our favourite team.
 
 The other scenarios are interpreted similarly. Do check out the seventh scenario, in which Banana end up as toppers.
