@@ -6,15 +6,16 @@
 #include "Team.hh"
 
 /******************************************************************************
- * Store information about a fixture. The members are two objects which do not
- * belong to this object. Their lifetime (and indeed the lifetime of this
- * object) is entirely controlled by the class which instantiates them. The
- * third member indicates whether the first team won the fixture or lost it.
+ * Store information about a fixture.
  *****************************************************************************/
 struct Fixture
 {
+    // These two members do not belong to this object. Their lifetime (and the
+    // lifetime of this object) is entirely controlled by the class which
+    // instantiates them.
     Team& a;
     Team& b;
+    // Whether the first team won the fixture.
     bool ordered = true;
 
     Fixture(Team& a, Team& b);

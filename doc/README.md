@@ -15,7 +15,8 @@ Must be followed by a space and a number indicating how many points are earned b
 was drawn or tied or similar. Optional; defaults to 1.
 
 #### `team`
-Must be followed by a space and the name of the team whose possible outcomes you'd like to see.
+Must be followed by a space and the name of your favourite team (i.e. the team whose possible outcomes you'd like to
+see).
 
 #### `fixtures.completed`
 Must be followed by a list of matches which have already been played. Each match must be on a separate line. The end of
