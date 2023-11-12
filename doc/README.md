@@ -194,8 +194,8 @@ In the last (i.e. eighth) scenario, Banana finish at position 2.
 The final points table is shown under `fixtures.results`. Banana get 4 points in all. Guava top the table with 6
 points. Apple, Orange and Jackfruit end up with 4, 4 and 2 points respectively.
 
-For the tournament to end like this, the events that must transpire are under `fixtures.upcoming`, with the name of the
-winning team written first.
+For the tournament to end like this, the events that must transpire are mentioned under `fixtures.upcoming`. (The name
+of the winning team is written first.)
 * Jackfruit must beat Apple;
 * Orange and Guava must beat Jackfruit; and
 * Banana must beat Apple and Jackfruit.
