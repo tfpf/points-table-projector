@@ -21,28 +21,30 @@ Must be followed by a space and the name of the team whose possible outcomes you
 Must be followed by a list of matches which have already been played. Each match must be on a separate line. The end of
 the list is indicated by a blank line. A match is described by the names of the two teams who played, separated by a
 comma <kbd>,</kbd>. The name of the winning team should be written first. If neither team won (e.g. if the match was
-tied), an equals sign <kbd>=</kbd> must separate them. No spaces must be added.
+tied), an equals sign <kbd>=</kbd> must separate them.
 
 #### `fixtures.upcoming`
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
 list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
-comma <kbd>,</kbd>. No spaces must be added.
+comma <kbd>,</kbd>.
 
 ## Notes
 * Team names are case-sensitive.
 * Blank lines are ignored.
   * Remember, however, that the `fixtures.completed` list is terminated with a blank line, as mentioned above.
 * Spaces at the start and end of a line are not stripped. They will be treated as parts of the words written on that
-  line. Hence, leading and trailing spaces must be avoided.
+  line. This can lead to unexpected behaviour. Hence, spaces must be avoided except as noted above.
 
 ## Example
 Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Four matches have been played.
+
 0. Apple beat Orange;
 0. Guava beat Banana;
 0. Guava beat Orange; and
 0. Oange beat Banana.
 
 Six matches remain.
+
 0. Apple v/s Guava;
 0. Jackfruit v/s Apple;
 0. Orange v/s Jackfruit;
