@@ -24,6 +24,8 @@ the list is indicated by a blank line. A match is described by the names of the 
 comma <kbd>,</kbd>. The name of the winning team should be written first. If neither team won (e.g. if the match was
 tied), an equals sign <kbd>=</kbd> must separate them.
 
+#### `fixtures.results`
+
 #### `fixtures.upcoming`
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
 list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
