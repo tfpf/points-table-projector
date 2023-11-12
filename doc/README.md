@@ -43,7 +43,7 @@ Four matches have been played.
 1. Apple beat Orange;
 1. Guava beat Banana;
 1. Guava beat Orange; and
-1. Oange beat Banana.
+1. Orange beat Banana.
 
 Six matches remain.
 
@@ -73,3 +73,118 @@ Jackfruit,Banana
 ```
 
 # Output Format
+Assuming Banana win both of their remaining matches, there are eight different scenarios. The program outputs all of
+them.
+
+<details>
+
+<summary>Click to show</summary>
+
+```
+2
+  fixtures.results
+    Apple 6
+    Banana 4
+    Guava 4
+    Jackfruit 4
+    Orange 2
+  fixtures.upcoming
+    Apple,Jackfruit
+    Banana,Apple
+    Jackfruit,Orange
+    Jackfruit,Guava
+    Banana,Jackfruit
+3
+  fixtures.results
+    Apple 6
+    Guava 6
+    Banana 4
+    Orange 2
+    Jackfruit 2
+  fixtures.upcoming
+    Apple,Jackfruit
+    Banana,Apple
+    Jackfruit,Orange
+    Guava,Jackfruit
+    Banana,Jackfruit
+2
+  fixtures.results
+    Apple 6
+    Banana 4
+    Orange 4
+    Guava 4
+    Jackfruit 2
+  fixtures.upcoming
+    Apple,Jackfruit
+    Banana,Apple
+    Orange,Jackfruit
+    Jackfruit,Guava
+    Banana,Jackfruit
+3
+  fixtures.results
+    Apple 6
+    Guava 6
+    Banana 4
+    Orange 4
+    Jackfruit 0
+  fixtures.upcoming
+    Apple,Jackfruit
+    Banana,Apple
+    Orange,Jackfruit
+    Guava,Jackfruit
+    Banana,Jackfruit
+2
+  fixtures.results
+    Jackfruit 6
+    Banana 4
+    Apple 4
+    Guava 4
+    Orange 2
+  fixtures.upcoming
+    Jackfruit,Apple
+    Banana,Apple
+    Jackfruit,Orange
+    Jackfruit,Guava
+    Banana,Jackfruit
+2
+  fixtures.results
+    Guava 6
+    Banana 4
+    Apple 4
+    Jackfruit 4
+    Orange 2
+  fixtures.upcoming
+    Jackfruit,Apple
+    Banana,Apple
+    Jackfruit,Orange
+    Guava,Jackfruit
+    Banana,Jackfruit
+1
+  fixtures.results
+    Banana 4
+    Apple 4
+    Orange 4
+    Guava 4
+    Jackfruit 4
+  fixtures.upcoming
+    Jackfruit,Apple
+    Banana,Apple
+    Orange,Jackfruit
+    Jackfruit,Guava
+    Banana,Jackfruit
+2
+  fixtures.results
+    Guava 6
+    Banana 4
+    Apple 4
+    Orange 4
+    Jackfruit 2
+  fixtures.upcoming
+    Jackfruit,Apple
+    Banana,Apple
+    Orange,Jackfruit
+    Guava,Jackfruit
+    Banana,Jackfruit
+```
+
+</details>
