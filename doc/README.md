@@ -1,7 +1,5 @@
 # Input File Format
-The input file must contain keywords describing several aspects of the tournament. Lines in the file may be blank, but
-if they contain spaces at the start or end, those spaces are treated as parts of the words written on that line. Hence,
-avoid leading and trailing spaces.
+The input file must contain keywords describing several aspects of the tournament.
 
 ## Keywords
 #### `points.win`
@@ -30,25 +28,44 @@ Must be followed by a list of matches which are to be played. Each match must be
 list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
 comma <kbd>,</kbd>. No spaces must be added.
 
+## Notes
+* Team names are case-sensitive.
+* Blank lines are ignored.
+  * Remember, however, that the `fixtures.completed` list is terminated with a blank line, as mentioned above.
+* Spaces at the start and end of a line are not stripped. They will be treated as parts of the words written on that
+  line. Hence, leading and trailing spaces must be avoided.
+
 ## Example
+Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Four matches have been played.
+0. Apple beat Orange;
+0. Guava beat Banana;
+0. Guava beat Orange; and
+0. Oange beat Banana.
+
+Six matches remain.
+0. Apple v/s Guava;
+0. Jackfruit v/s Apple;
+0. Orange v/s Jackfruit;
+0. Guava v/s Jackfruit;
+0. Banana v/s Apple; and
+0. Jackfruit v/s Banana.
+
 ```
 team Banana
 
 fixtures.completed
 Apple,Orange
-Apple,Guava
+Guava,Banana
+Guava,Orange
+Orange,Banana
 
 fixtures.upcoming
-Guava,Orange
+Apple,Guava
 Jackfruit,Apple
 Orange,Jackfruit
 Guava,Jackfruit
 Banana,Apple
-Orange,Banana
-Guava,Banana
 Jackfruit,Banana
 ```
-
-Team names are case-sensitive.
 
 # Output Format
