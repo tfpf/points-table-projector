@@ -11,9 +11,9 @@
 #include "PointsTableProjector.hh"
 #include "Team.hh"
 
-#define THROW(exc, msg)                                                                                     \
-    do {                                                                                                    \
-        throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg); \
+#define THROW(exc, msg)                                                                                               \
+    do {                                                                                                              \
+        throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);           \
     } while (false)
 
 /******************************************************************************
@@ -74,11 +74,10 @@ void PointsTableProjector::parse(void)
         }
         if (readline == "fixtures.completed" || readline == "fixtures.results") {
             if (!this->teams.empty()) {
-                std::string message = "'" + readline + "' found in '" + this->fname;
-                message += "' on line " + std::to_string(this->line_number);
-                message += ", but one of 'fixtures.completed', 'fixtures.results' and 'fixtures.upcoming'";
-                message += " has already been used previously.";
-                THROW(std::invalid_argument, message);
+                THROW(std::invalid_argument,
+                    "'" + readline + "' found in '" + this->fname + "' on line " + std::to_string(this->line_number)
+                        + ", but one of 'fixtures.completed', 'fixtures.results' and 'fixtures.upcoming' has already "
+                          "been used previously.");
             }
             bool completed_or_results = readline == "fixtures.completed";
             while (std::getline(fhandle, readline) && !readline.empty()) {
@@ -100,13 +99,11 @@ void PointsTableProjector::parse(void)
         this->unknown_keyword_error(readline);
     }
     if (favourite_tname.empty()) {
-        std::string message = "Favourite team not specified in '" + this->fname + "'.";
-        THROW(std::runtime_error, message);
+        THROW(std::runtime_error, "Favourite team not specified in '" + this->fname + "'.");
     }
     auto tname_tid_it = this->tname_tid.find(favourite_tname);
     if (tname_tid_it == this->tname_tid.end()) {
-        std::string message = "No fixtures involving '" + favourite_tname + "' found in '" + this->fname + "'.";
-        THROW(std::runtime_error, message);
+        THROW(std::runtime_error, "No fixtures involving '" + favourite_tname + "' found in '" + this->fname + "'.");
     }
     this->favourite_tid = tname_tid_it->second;
     if (this->fixtures.empty()) {
@@ -121,9 +118,8 @@ void PointsTableProjector::parse(void)
  *****************************************************************************/
 void PointsTableProjector::unknown_keyword_error(std::string const& str)
 {
-    std::string message = "Unknown keyword '" + str + "' in '" + this->fname;
-    message += "' on line " + std::to_string(this->line_number) + '.';
-    THROW(std::invalid_argument, message);
+    THROW(std::invalid_argument,
+        "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
 }
 
 /******************************************************************************
@@ -137,9 +133,9 @@ void PointsTableProjector::parse_int(std::string const& str, int& intvar)
     try {
         intvar = std::stoi(str);
     } catch (std::exception& e) {
-        std::string message = "Could not parse '" + str + "' as an integer in '" + this->fname;
-        message += "' on line " + std::to_string(this->line_number) + '.';
-        THROW(std::invalid_argument, message);
+        THROW(std::invalid_argument,
+            "Could not parse '" + str + "' as an integer in '" + this->fname + "' on line "
+                + std::to_string(this->line_number) + '.');
     }
 }
 
@@ -154,9 +150,8 @@ void PointsTableProjector::parse_fixture(std::string const& str, bool update_poi
 {
     std::size_t delim_idx = str.find_first_of(",=");
     if (delim_idx == std::string::npos) {
-        std::string message = "Neither ',' nor '=' found in '" + this->fname;
-        message += "' on line " + std::to_string(this->line_number) + '.';
-        THROW(std::invalid_argument, message);
+        THROW(std::invalid_argument,
+            "Neither ',' nor '=' found in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
     }
     std::size_t first_tid = this->reg(str.substr(0, delim_idx));
     std::size_t second_tid = this->reg(str.substr(delim_idx + 1, std::string::npos));
@@ -182,9 +177,9 @@ void PointsTableProjector::parse_result(std::string const& str)
 {
     std::size_t delim_idx = str.find(' ');
     if (delim_idx == std::string::npos) {
-        std::string message = "Could not parse '" + str + "' as team name and points in '" + this->fname;
-        message += "' on line " + std::to_string(this->line_number) + '.';
-        THROW(std::invalid_argument, message);
+        THROW(std::invalid_argument,
+            "Could not parse '" + str + "' as team name and points in '" + this->fname + "' on line "
+                + std::to_string(this->line_number) + '.');
     }
     std::size_t tid = this->reg(str.substr(0, delim_idx));
     this->parse_int(&str[delim_idx + 1], this->teams[tid].points);
@@ -225,10 +220,8 @@ void PointsTableProjector::dump(void)
         }
         return false;
     });
-    int rank = std::find_if(teams.begin(), teams.end(), [&](Team const& t) {
-        return t.tid == this->favourite_tid;
-    }) - teams.begin()
-        + 1;
+    int rank = std::find_if(teams.begin(), teams.end(), [&](Team const& t) { return t.tid == this->favourite_tid; })
+        - teams.begin() + 1;
     std::cout << rank << '\n';
     std::cout << "  fixtures.results\n";
     for (Team const& team : teams) {
@@ -243,10 +236,7 @@ void PointsTableProjector::dump(void)
 /******************************************************************************
  * Find all possible results for our favourite team.
  *****************************************************************************/
-void PointsTableProjector::solve(void)
-{
-    this->solve_(0);
-}
+void PointsTableProjector::solve(void) { this->solve_(0); }
 
 /******************************************************************************
  * Find all possible results for our favourite team starting from the specified
