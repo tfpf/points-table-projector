@@ -1,0 +1,16 @@
+name: style
+on: [push, workflow_dispatch]
+
+jobs:
+  style:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-12, ubuntu-22.04]
+        path: ['src/include', 'src/lib']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jidicula/clang-format-action@v4.11.0
+        with:
+          check-path: ${{ matrix.path }}
