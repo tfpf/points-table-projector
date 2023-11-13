@@ -22,7 +22,8 @@ Team::Team(std::string const& tname, std::size_t tid)
  * @param ostream
  * @param team
  *****************************************************************************/
-std::ostream& operator<<(std::ostream& ostream, Team const& team)
+std::ostream&
+operator<<(std::ostream& ostream, Team const& team)
 {
     ostream << team.tname << ' ' << team.points;
     return ostream;

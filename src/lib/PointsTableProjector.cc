@@ -33,7 +33,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname)
 /******************************************************************************
  * Read the contents of the input file and initialise all members accordingly.
  *****************************************************************************/
-void PointsTableProjector::parse(void)
+void
+PointsTableProjector::parse(void)
 {
     std::ifstream fhandle(this->fname);
     if (!fhandle.good() || !std::filesystem::is_regular_file(this->fname)) {
@@ -116,7 +117,8 @@ void PointsTableProjector::parse(void)
  *
  * @param str String which led to the error.
  *****************************************************************************/
-void PointsTableProjector::unknown_keyword_error(std::string const& str)
+void
+PointsTableProjector::unknown_keyword_error(std::string const& str)
 {
     THROW(std::invalid_argument,
         "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
@@ -128,7 +130,8 @@ void PointsTableProjector::unknown_keyword_error(std::string const& str)
  * @param str String to parse.
  * @param intvar Variable to store the result in.
  *****************************************************************************/
-void PointsTableProjector::parse_int(std::string const& str, int& intvar)
+void
+PointsTableProjector::parse_int(std::string const& str, int& intvar)
 {
     try {
         intvar = std::stoi(str);
@@ -146,7 +149,8 @@ void PointsTableProjector::parse_int(std::string const& str, int& intvar)
  * @param update_points If `true`, update the points table. If `false`, store
  *     this match for later.
  *****************************************************************************/
-void PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
+void
+PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 {
     std::size_t delim_idx = str.find_first_of(",=");
     if (delim_idx == std::string::npos) {
@@ -173,7 +177,8 @@ void PointsTableProjector::parse_fixture(std::string const& str, bool update_poi
  *
  * @param str String to parse.
  *****************************************************************************/
-void PointsTableProjector::parse_result(std::string const& str)
+void
+PointsTableProjector::parse_result(std::string const& str)
 {
     std::size_t delim_idx = str.find(' ');
     if (delim_idx == std::string::npos) {
@@ -193,7 +198,8 @@ void PointsTableProjector::parse_result(std::string const& str)
  *
  * @return Team ID.
  *****************************************************************************/
-std::size_t PointsTableProjector::reg(std::string const& tname)
+std::size_t
+PointsTableProjector::reg(std::string const& tname)
 {
     auto tname_tid_it = this->tname_tid.find(tname);
     if (tname_tid_it == this->tname_tid.end()) {
@@ -208,7 +214,8 @@ std::size_t PointsTableProjector::reg(std::string const& tname)
 /******************************************************************************
  * Display some members in readable form.
  *****************************************************************************/
-void PointsTableProjector::dump(void)
+void
+PointsTableProjector::dump(void)
 {
     std::vector<Team> teams(this->teams);
     std::sort(teams.rbegin(), teams.rend(), [&](Team const& a, Team const& b) {
@@ -236,7 +243,11 @@ void PointsTableProjector::dump(void)
 /******************************************************************************
  * Find all possible results for our favourite team.
  *****************************************************************************/
-void PointsTableProjector::solve(void) { this->solve_(0); }
+void
+PointsTableProjector::solve(void)
+{
+    this->solve_(0);
+}
 
 /******************************************************************************
  * Find all possible results for our favourite team starting from the specified
@@ -244,7 +255,8 @@ void PointsTableProjector::solve(void) { this->solve_(0); }
  *
  * @param idx Fixture index.
  *****************************************************************************/
-void PointsTableProjector::solve_(std::size_t idx)
+void
+PointsTableProjector::solve_(std::size_t idx)
 {
     if (idx >= this->fixtures.size()) {
         this->dump();
