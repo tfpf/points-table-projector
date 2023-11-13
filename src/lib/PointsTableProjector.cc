@@ -227,7 +227,10 @@ PointsTableProjector::dump(void)
         }
         return false;
     });
-    int rank = std::find_if(teams.begin(), teams.end(), [&](Team const& t) { return t.tid == this->favourite_tid; })
+    int rank = std::find_if(teams.begin(), teams.end(),
+                   [&](Team const& t) {
+                       return t.tid == this->favourite_tid;
+                   })
         - teams.begin() + 1;
     std::cout << rank << '\n';
     std::cout << "  fixtures.results\n";
