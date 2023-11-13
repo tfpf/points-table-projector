@@ -40,8 +40,8 @@ If this keyword is used,
 
 #### `fixtures.upcoming`
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
-list is indicated by a blank line or the end of the file. A match is described by the names of the two teams who
-played, separated by a comma <kbd>,</kbd>.
+list is indicated by a blank line or the end of the file. A match is described by the names of the two teams who will
+play, separated by a comma <kbd>,</kbd>.
 
 ## Notes
 * Team names are case-sensitive.
