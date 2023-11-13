@@ -21,8 +21,7 @@ Fixture::Fixture(Team& a, Team& b)
  * @param ostream
  * @param fixture
  *****************************************************************************/
-std::ostream&
-operator<<(std::ostream& ostream, Fixture const& fixture)
+std::ostream& operator<<(std::ostream& ostream, Fixture const& fixture)
 {
     if (fixture.ordered) {
         ostream << fixture.a.tname << ',' << fixture.b.tname;

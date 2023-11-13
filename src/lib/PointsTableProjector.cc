@@ -198,8 +198,7 @@ void PointsTableProjector::parse_result(std::string const& str)
  *
  * @return Team ID.
  *****************************************************************************/
-std::size_t
-PointsTableProjector::reg(std::string const& tname)
+std::size_t PointsTableProjector::reg(std::string const& tname)
 {
     auto tname_tid_it = this->tname_tid.find(tname);
     if (tname_tid_it == this->tname_tid.end()) {
