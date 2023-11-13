@@ -20,6 +20,7 @@ class PointsTableProjector
     void parse(void);
     void parse_int(char const *str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
+    void parse_result(std::string const& str);
     std::size_t reg(std::string const& tname);
     void solve_(std::size_t idx);
 

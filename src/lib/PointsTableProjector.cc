@@ -56,6 +56,9 @@ PointsTableProjector::parse(void)
         {
             continue;
         }
+        // C++11 and newer strings are guaranteed to end with a null character,
+        // so it is safe to take the address of a character and treat it as a C
+        // string, as seen below.
         if(readline.rfind("points.win", 0) == 0)
         {
             this->parse_int(&readline[10], this->points_win);
@@ -76,14 +79,21 @@ PointsTableProjector::parse(void)
             favourite_tname = readline.substr(5, std::string::npos);
             continue;
         }
-        if(readline == "fixtures.completed")
+        if(readline == "fixtures.completed" || readline == "fixtures.results")
         {
-            // Do not store these. Just calculate the points earned by each
-            // team.
+            if(!this->teams.empty())
+            {
+                std::string message = "'" + readline + "' found in '" + this->fname;
+                message += "' on line " + std::to_string(this->line_number);
+                message += ", but one of 'fixtures.completed', 'fixtures.results' and 'fixtures.upcoming'";
+                message += " has already been used previously.";
+                THROW(std::invalid_argument, message);
+            }
+            bool completed_or_results = readline == "fixtures.completed";
             while(std::getline(fhandle, readline) && !readline.empty())
             {
                 ++this->line_number;
-                this->parse_fixture(readline, true);
+                completed_or_results ? this->parse_fixture(readline, true) : this->parse_result(readline);
             }
             ++this->line_number;
             continue;
@@ -143,10 +153,11 @@ PointsTableProjector::parse_int(char const *str, int& intvar)
 }
 
 /******************************************************************************
- * Store information about a match.
+ * Parse a string as a match between two teams.
  *
  * @param str String to parse.
- * @param update_points Whether to update the points table.
+ * @param update_points If `true`, update the points table. If `false`, store
+ *     this match for later.
  *****************************************************************************/
 void
 PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
@@ -176,6 +187,34 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
     else
     {
         this->fixtures.emplace_back(Fixture(this->teams[first_tid], this->teams[second_tid]));
+    }
+}
+
+/******************************************************************************
+ * Parse a string as an entry of the points table.
+ *
+ * @param str String to parse.
+ *****************************************************************************/
+void
+PointsTableProjector::parse_result(std::string const& str)
+{
+    std::size_t delim_idx = str.find(' ');
+    if(delim_idx == std::string::npos)
+    {
+        std::string message = "Team name and points not found in '" + this->fname;
+        message += "' on line " + std::to_string(this->line_number) + '.';
+        THROW(std::invalid_argument, message);
+    }
+    std::size_t tid = this->reg(str.substr(0, delim_idx));
+    try
+    {
+        this->teams[tid].points = std::stoi(&str[delim_idx + 1]);
+    }
+    catch(std::exception& e)
+    {
+        std::string message = "Integer parse failure in '" + this->fname;
+        message += "' on line " + std::to_string(this->line_number) + '.';
+        THROW(std::invalid_argument, message);
     }
 }
 

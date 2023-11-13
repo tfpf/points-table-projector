@@ -19,25 +19,41 @@ Must be followed by a space and the name of your favourite team (i.e. the team w
 see).
 
 #### `fixtures.completed`
-Must be followed by a list of matches which have already been played. Each match must be on a separate line. The end of
-the list is indicated by a blank line. A match is described by the names of the two teams who played, separated by a
-comma <kbd>,</kbd>. The name of the winning team should be written first. If neither team won (e.g. if the match was
-tied), an equals sign <kbd>=</kbd> must separate them.
+Must be followed by a list of matches which have already been played. (The end of the list is indicated by a blank
+line.) Each match must be on a separate line. A match is described by the names of the two teams who played, separated
+by a comma <kbd>,</kbd>. The name of the winning team should be written first. If neither team won (e.g. if the match
+was tied), an equals sign <kbd>=</kbd> must separate them. Optional; if not specified, it is assumed that no matches
+have been played yet.
+
+If this keyword is used,
+* it must appear before `fixtures.upcoming`; and
+* `fixtures.results` must not be used.
+
+#### `fixtures.results`
+Must be followed by the points table. (The end of the table is indicated by a blank line.) Each entry of the table must
+be on a separate line. An entry consists of the name of team and the points earned by that team, separated by a space.
+Optional; if not specified, it is assumed that no matches have been played yet.
+
+If this keyword is used,
+* it must appear before `fixtures.upcoming`; and
+* `fixtures.completed` must not be used.
 
 #### `fixtures.upcoming`
 Must be followed by a list of matches which are to be played. Each match must be on a separate line. The end of the
-list is indicated by the end of the file. A match is described by the names of the two teams who played, separated by a
-comma <kbd>,</kbd>.
+list is indicated by a blank line or the end of the file. A match is described by the names of the two teams who will
+play, separated by a comma <kbd>,</kbd>.
 
 ## Notes
 * Team names are case-sensitive.
 * Blank lines are ignored.
-  * Remember, however, that the `fixtures.completed` list is terminated with a blank line, as mentioned above.
+  * Remember, however, that the `fixtures.completed` list and `fixtures.results` table are terminated with a blank
+    line, as mentioned above.
 * Spaces at the start and end of a line are not stripped. They will be treated as parts of the words written on that
   line. This can lead to unexpected behaviour. Hence, spaces must be avoided except as noted above.
 * The maximum number of teams supported is 1024.
   * This is not a hard limit. You can increase it simply by changing the number in the constructor of
     `PointsTableProjector`.
+* All teams start with zero points.
 
 ## Example
 Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Our favourite team is Banana.
@@ -58,6 +74,8 @@ Six matches remain.
 1. Banana v/s Apple; and
 1. Jackfruit v/s Banana.
 
+You could write the input file like this:
+
 ```
 team Banana
 
@@ -75,6 +93,28 @@ Guava,Jackfruit
 Banana,Apple
 Jackfruit,Banana
 ```
+
+or like this.
+
+```
+team Banana
+
+fixtures.results
+Apple 4
+Orange 2
+Guava 4
+Banana 0
+Jackfruit 0
+
+fixtures.upcoming
+Jackfruit,Apple
+Banana,Apple
+Orange,Jackfruit
+Guava,Jackfruit
+Jackfruit,Banana
+```
+
+The two ways are equivalent.
 
 # Output Format
 Assuming Banana win both of their remaining matches, there are eight different scenarios. The program outputs all of
