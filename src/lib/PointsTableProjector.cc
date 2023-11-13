@@ -89,9 +89,6 @@ PointsTableProjector::parse(void)
                 message += " has already been used previously.";
                 THROW(std::invalid_argument, message);
             }
-
-            // Do not store these. Just calculate the points earned by each
-            // team.
             bool completed_or_results = readline == "fixtures.completed";
             while(std::getline(fhandle, readline) && !readline.empty())
             {
