@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   style:
-    name: ${{ matrix.os }}
+    name: style / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
