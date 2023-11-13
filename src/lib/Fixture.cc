@@ -10,7 +10,8 @@
  * @param b
  *****************************************************************************/
 Fixture::Fixture(Team& a, Team& b)
-: a(a), b(b)
+    : a(a)
+    , b(b)
 {
 }
 
@@ -23,12 +24,9 @@ Fixture::Fixture(Team& a, Team& b)
 std::ostream&
 operator<<(std::ostream& ostream, Fixture const& fixture)
 {
-    if(fixture.ordered)
-    {
+    if (fixture.ordered) {
         ostream << fixture.a.tname << ',' << fixture.b.tname;
-    }
-    else
-    {
+    } else {
         ostream << fixture.b.tname << ',' << fixture.a.tname;
     }
     return ostream;

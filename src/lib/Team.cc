@@ -11,7 +11,8 @@
  * @param tid Team ID.
  *****************************************************************************/
 Team::Team(std::string const& tname, std::size_t tid)
-: tname(tname), tid(tid)
+    : tname(tname)
+    , tid(tid)
 {
 }
 
