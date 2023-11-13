@@ -8,8 +8,7 @@
 /******************************************************************************
  * Store information about a team.
  *****************************************************************************/
-struct Team
-{
+struct Team {
     std::string tname;
     std::size_t tid;
     int points = 0;
@@ -19,4 +18,4 @@ struct Team
 
 std::ostream& operator<<(std::ostream& ostream, Team const& team);
 
-#endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_TEAM_HH_
+#endif // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_TEAM_HH_

@@ -7,10 +7,9 @@
  * Main function.
  *****************************************************************************/
 int
-main(int const argc, char const *argv[])
+main(int const argc, char const* argv[])
 {
-    if(argc < 2)
-    {
+    if (argc < 2) {
         std::clog << "Input file not specified.\n";
         return EXIT_FAILURE;
     }

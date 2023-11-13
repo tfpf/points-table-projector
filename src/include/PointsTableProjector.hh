@@ -9,14 +9,13 @@
 #include "Fixture.hh"
 #include "Team.hh"
 
-class PointsTableProjector
-{
-    public:
+class PointsTableProjector {
+public:
     PointsTableProjector(std::string const& fname);
     void dump(void);
     void solve(void);
 
-    private:
+private:
     void parse(void);
     void unknown_keyword_error(std::string const& str);
     void parse_int(std::string const& str, int& var);
@@ -25,7 +24,7 @@ class PointsTableProjector
     std::size_t reg(std::string const& tname);
     void solve_(std::size_t idx);
 
-    private:
+private:
     std::string const fname;
     int line_number = 0;
     int points_win = 2;
@@ -39,4 +38,4 @@ class PointsTableProjector
     std::vector<Fixture> fixtures;
 };
 
-#endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
+#endif // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
