@@ -74,9 +74,16 @@ PointsTableProjector::parse(void)
             this->parse_int(&readline[12], this->points_other);
             continue;
         }
-        if(readline.rfind("team ", 0) == 0)
+        if(readline.rfind("team", 0) == 0)
         {
-            favourite_tname = readline.substr(5, std::string::npos);
+            if(readline[4] == ' ')
+            {
+                favourite_tname = readline.substr(5, std::string::npos);
+            }
+            else if(readline[4] != '\0')
+            {
+                this->unknown_keyword_error(readline);
+            }
             continue;
         }
         if(readline == "fixtures.completed" || readline == "fixtures.results")
@@ -109,9 +116,7 @@ PointsTableProjector::parse(void)
             ++this->line_number;
             continue;
         }
-        std::string message = "Unknown keyword in '" + this->fname;
-        message += "' on line " + std::to_string(this->line_number) + '.';
-        THROW(std::invalid_argument, message);
+        this->unknown_keyword_error(readline);
     }
     if(favourite_tname.empty())
     {
@@ -127,8 +132,21 @@ PointsTableProjector::parse(void)
     this->favourite_tid = tname_tid_it->second;
     if(this->fixtures.empty())
     {
-        THROW(std::runtime_error, "No upcoming fixtures specified in '" + this->fname + "'.");
+        THROW(std::runtime_error, "'fixtures.upcoming' empty or not specified in '" + this->fname + "'.");
     }
+}
+
+/******************************************************************************
+ * Generic error.
+ *
+ * @param str String which led to the error.
+ *****************************************************************************/
+void
+PointsTableProjector::unknown_keyword_error(std::string const& str)
+{
+    std::string message = "Unknown keyword '" + str + "' in '" + this->fname;
+    message += "' on line " + std::to_string(this->line_number) + '.';
+    THROW(std::invalid_argument, message);
 }
 
 /******************************************************************************
@@ -138,7 +156,7 @@ PointsTableProjector::parse(void)
  * @param intvar Variable to store the result in.
  *****************************************************************************/
 void
-PointsTableProjector::parse_int(char const *str, int& intvar)
+PointsTableProjector::parse_int(std::string const& str, int& intvar)
 {
     try
     {
@@ -146,7 +164,7 @@ PointsTableProjector::parse_int(char const *str, int& intvar)
     }
     catch(std::exception& e)
     {
-        std::string message = "Integer parse failure in '" + this->fname;
+        std::string message = "Could not parse '" + str + "' as an integer in '" + this->fname;
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
@@ -201,21 +219,12 @@ PointsTableProjector::parse_result(std::string const& str)
     std::size_t delim_idx = str.find(' ');
     if(delim_idx == std::string::npos)
     {
-        std::string message = "Team name and points not found in '" + this->fname;
+        std::string message = "Could not parse '" + str + "' as team name and points in '" + this->fname;
         message += "' on line " + std::to_string(this->line_number) + '.';
         THROW(std::invalid_argument, message);
     }
     std::size_t tid = this->reg(str.substr(0, delim_idx));
-    try
-    {
-        this->teams[tid].points = std::stoi(&str[delim_idx + 1]);
-    }
-    catch(std::exception& e)
-    {
-        std::string message = "Integer parse failure in '" + this->fname;
-        message += "' on line " + std::to_string(this->line_number) + '.';
-        THROW(std::invalid_argument, message);
-    }
+    this->parse_int(&str[delim_idx + 1], this->teams[tid].points);
 }
 
 /******************************************************************************

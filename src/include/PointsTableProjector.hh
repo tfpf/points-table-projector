@@ -18,7 +18,8 @@ class PointsTableProjector
 
     private:
     void parse(void);
-    void parse_int(char const *str, int& var);
+    void unknown_keyword_error(std::string const& str);
+    void parse_int(std::string const& str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
     void parse_result(std::string const& str);
     std::size_t reg(std::string const& tname);
