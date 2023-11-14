@@ -250,17 +250,48 @@ PointsTableProjector::dump(void)
 }
 
 /******************************************************************************
- * Find all possible results for our favourite team.
+ * Find all possible results for our favourite team (assuming they win all
+ * their fixtures).
  *****************************************************************************/
 void
 PointsTableProjector::solve(void)
 {
+    // Calculate the minimum and maximum points each team can earn.
+    std::vector<int[2]> min_max(this->teams.size());
+    for (Team const& team : this->teams) {
+        min_max[team.tid][0] = min_max[team.tid][1] = team.points;
+    }
+    for (Fixture const& fixture : this->fixtures) {
+        // Assume our favourite team always wins, so its minimum and maximum
+        // points are the same.
+        if (fixture.a.tid == this->favourite_tid || fixture.b.tid == this->favourite_tid) {
+            min_max[this->favourite_tid][0] += this->points_win;
+            min_max[this->favourite_tid][1] += this->points_win;
+        }
+        if (fixture.a.tid != this->favourite_tid) {
+            min_max[fixture.a.tid][0] += this->points_lose;
+            min_max[fixture.a.tid][1] += this->points_win;
+        }
+        if (fixture.b.tid != this->favourite_tid) {
+            min_max[fixture.b.tid][0] += this->points_lose;
+            min_max[fixture.b.tid][1] += this->points_win;
+        }
+    }
+
+    // Which teams which will always finish with fewer/more points than our
+    // favourite team?
+    this->inconsequential.resize(this->teams.size(), false);
+    for (Team const& team : this->teams) {
+        inconsequential[team.tid] = min_max[team.tid][1] < min_max[this->favourite_tid][0]
+            || min_max[team.tid][0] > min_max[this->favourite_tid][1];
+    }
+
     this->solve_(0);
 }
 
 /******************************************************************************
- * Find all possible results for our favourite team starting from the specified
- * fixture, and assuming they win all their fixtures.
+ * Find all possible results for our favourite team (assuming they win all
+ * their fixtures) starting from the specified fixture.
  *
  * @param idx Fixture index.
  *****************************************************************************/
