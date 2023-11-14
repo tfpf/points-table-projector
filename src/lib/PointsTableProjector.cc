@@ -311,8 +311,7 @@ PointsTableProjector::solve_(std::size_t idx)
         return static_cast<bool>(mtwist() & 1);
     };
 
-    // If the outcome of this fixture does not matter, pick a winner
-    // randomly.
+    // If the outcome of this fixture does not matter, pick a winner randomly.
     Fixture& fixture = this->fixtures[idx];
     if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
         fixture.ordered = bgen();
