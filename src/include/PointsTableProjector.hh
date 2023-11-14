@@ -23,6 +23,7 @@ private:
     void parse_result(std::string const& str);
     std::size_t reg(std::string const& tname);
     void solve_(std::size_t idx);
+    void solve__(std::size_t idx, Team& winner, Team& loser);
 
 private:
     std::string const fname;

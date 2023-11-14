@@ -282,7 +282,7 @@ PointsTableProjector::solve(void)
     // favourite team?
     this->inconsequential.resize(this->teams.size(), false);
     for (Team const& team : this->teams) {
-        inconsequential[team.tid] = min_max[team.tid][1] < min_max[this->favourite_tid][0]
+        this->inconsequential[team.tid] = min_max[team.tid][1] < min_max[this->favourite_tid][0]
             || min_max[team.tid][0] > min_max[this->favourite_tid][1];
     }
 
@@ -303,20 +303,35 @@ PointsTableProjector::solve_(std::size_t idx)
         return;
     }
     Fixture& fixture = this->fixtures[idx];
+    if(this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid])
+    {
+        fixture.ordered = true;
+        this->solve__(idx + 1, fixture.a, fixture.b);
+        return;
+    }
     if (fixture.a.tid != this->favourite_tid) {
         fixture.ordered = false;
-        fixture.a.points += this->points_lose;
-        fixture.b.points += this->points_win;
-        this->solve_(idx + 1);
-        fixture.a.points -= this->points_lose;
-        fixture.b.points -= this->points_win;
+        this->solve__(idx + 1, fixture.b, fixture.a);
     }
     if (fixture.b.tid != this->favourite_tid) {
         fixture.ordered = true;
-        fixture.a.points += this->points_win;
-        fixture.b.points += this->points_lose;
-        this->solve_(idx + 1);
-        fixture.a.points -= this->points_win;
-        fixture.b.points -= this->points_lose;
+        this->solve__(idx + 1, fixture.a, fixture.b);
     }
+}
+
+/******************************************************************************
+ * Recursion helper. Simulate the result of a fixture, recurse and unsimulate.
+ *
+ * @param idx Fixture index to recurse on.
+ * @param winner
+ * @param loser
+ *****************************************************************************/
+void
+PointsTableProjector::solve__(std::size_t idx, Team& winner, Team& loser)
+{
+    winner.points += this->points_win;
+    loser.points += this->points_lose;
+    this->solve_(idx);
+    loser.points -= this->points_lose;
+    winner.points -= this->points_win;
 }
