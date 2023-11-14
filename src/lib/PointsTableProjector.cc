@@ -2,8 +2,10 @@
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iterator>
+#include <random>
 #include <stdexcept>
 #include <string>
 
@@ -303,15 +305,15 @@ PointsTableProjector::solve_(std::size_t idx)
         return;
     }
 
-    // If the outcome of this fixture does not matter, assume that the team
-    // with more points wins.
+    // If the outcome of this fixture does not matter, pick a winner
+    // randomly.
     Fixture& fixture = this->fixtures[idx];
     if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
-        if (fixture.a.points < fixture.b.points) {
-            fixture.ordered = false;
+        static auto rgen = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
+        fixture.ordered = rgen();
+        if (!fixture.ordered) {
             this->solve__(idx, fixture.b, fixture.a);
         } else {
-            fixture.ordered = true;
             this->solve__(idx, fixture.a, fixture.b);
         }
         return;
