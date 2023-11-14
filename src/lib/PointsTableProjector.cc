@@ -305,12 +305,17 @@ PointsTableProjector::solve_(std::size_t idx)
         return;
     }
 
+    static std::random_device rdev;
+    static std::mt19937 mtwist(rdev());
+    static auto bgen = [&]() {
+        return static_cast<bool>(mtwist() & 1);
+    };
+
     // If the outcome of this fixture does not matter, pick a winner
     // randomly.
     Fixture& fixture = this->fixtures[idx];
     if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
-        static auto rgen = std::bind(std::uniform_int_distribution<>(0, 1), std::default_random_engine());
-        fixture.ordered = rgen();
+        fixture.ordered = bgen();
         if (!fixture.ordered) {
             this->solve__(idx, fixture.b, fixture.a);
         } else {
