@@ -1,4 +1,4 @@
-CPPFLAGS = -I./src/include
+CPPFLAGS = -Isrc/include
 CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -flto -fstrict-aliasing
 
 Sources = $(wildcard src/lib/*.cc)
