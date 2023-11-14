@@ -303,8 +303,7 @@ PointsTableProjector::solve_(std::size_t idx)
         return;
     }
     Fixture& fixture = this->fixtures[idx];
-    if(this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid])
-    {
+    if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
         fixture.ordered = true;
         this->solve__(idx + 1, fixture.a, fixture.b);
         return;
