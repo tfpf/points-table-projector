@@ -305,23 +305,23 @@ PointsTableProjector::solve_(std::size_t idx)
     Fixture& fixture = this->fixtures[idx];
     if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
         fixture.ordered = true;
-        this->solve__(idx + 1, fixture.a, fixture.b);
+        this->solve__(idx, fixture.a, fixture.b);
         return;
     }
     if (fixture.a.tid != this->favourite_tid) {
         fixture.ordered = false;
-        this->solve__(idx + 1, fixture.b, fixture.a);
+        this->solve__(idx, fixture.b, fixture.a);
     }
     if (fixture.b.tid != this->favourite_tid) {
         fixture.ordered = true;
-        this->solve__(idx + 1, fixture.a, fixture.b);
+        this->solve__(idx, fixture.a, fixture.b);
     }
 }
 
 /******************************************************************************
  * Recursion helper. Simulate the result of a fixture, recurse and unsimulate.
  *
- * @param idx Fixture index to recurse on.
+ * @param idx Fixture index.
  * @param winner
  * @param loser
  *****************************************************************************/
@@ -330,7 +330,7 @@ PointsTableProjector::solve__(std::size_t idx, Team& winner, Team& loser)
 {
     winner.points += this->points_win;
     loser.points += this->points_lose;
-    this->solve_(idx);
+    this->solve_(idx + 1);
     loser.points -= this->points_lose;
     winner.points -= this->points_win;
 }
