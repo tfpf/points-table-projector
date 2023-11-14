@@ -11,7 +11,7 @@
 #include "PointsTableProjector.hh"
 #include "Team.hh"
 
-#define THROW(exc, msg)                                                                                               \
+#define THROW(exc, msg)   \
     do {                                                                                                              \
         throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);           \
     } while (false)
