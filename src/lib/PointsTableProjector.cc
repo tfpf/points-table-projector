@@ -302,12 +302,22 @@ PointsTableProjector::solve_(std::size_t idx)
         this->dump();
         return;
     }
+
+    // If the outcome of this fixture does not matter, assume that the team
+    // with more points wins.
     Fixture& fixture = this->fixtures[idx];
     if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
-        fixture.ordered = true;
-        this->solve__(idx, fixture.a, fixture.b);
+        if (fixture.a.points < fixture.b.points) {
+            fixture.ordered = false;
+            this->solve__(idx, fixture.b, fixture.a);
+        } else {
+            fixture.ordered = true;
+            this->solve__(idx, fixture.a, fixture.b);
+        }
         return;
     }
+
+    // Assume that our favourite team always wins.
     if (fixture.a.tid != this->favourite_tid) {
         fixture.ordered = false;
         this->solve__(idx, fixture.b, fixture.a);
