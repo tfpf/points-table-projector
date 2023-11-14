@@ -18,4 +18,4 @@ struct Team {
 
 std::ostream& operator<<(std::ostream& ostream, Team const& team);
 
-#endif // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_TEAM_HH_
+#endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_TEAM_HH_
