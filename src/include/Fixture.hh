@@ -22,4 +22,4 @@ struct Fixture {
 
 std::ostream& operator<<(std::ostream& ostream, Fixture const& fixture);
 
-#endif // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_FIXTURE_HH_
+#endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_FIXTURE_HH_

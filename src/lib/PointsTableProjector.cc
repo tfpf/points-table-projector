@@ -66,6 +66,8 @@ PointsTableProjector::parse(void)
             continue;
         }
         if (readline.rfind("team", 0) == 0) {
+            // If this word is followed by nothing or a space, do not error
+            // out. Otherwise, identify it as the error it is.
             if (readline[4] == ' ') {
                 favourite_tname = readline.substr(5, std::string::npos);
             } else if (readline[4] != '\0') {
@@ -89,7 +91,6 @@ PointsTableProjector::parse(void)
             continue;
         }
         if (readline == "fixtures.upcoming") {
-            // Store these so that their results may be simulated.
             while (std::getline(fhandle, readline) && !readline.empty()) {
                 ++this->line_number;
                 this->parse_fixture(readline, false);
@@ -125,9 +126,9 @@ PointsTableProjector::unknown_keyword_error(std::string const& str)
 }
 
 /******************************************************************************
- * Store an integer in the specified variable.
+ * Parse a string as an integer. Store it in the specified variable.
  *
- * @param str String to parse.
+ * @param str String to parse. Expected to be numeric.
  * @param intvar Variable to store the result in.
  *****************************************************************************/
 void
@@ -143,11 +144,12 @@ PointsTableProjector::parse_int(std::string const& str, int& intvar)
 }
 
 /******************************************************************************
- * Parse a string as a match between two teams.
+ * Parse a string as a match between two teams, registering them if necessary.
  *
- * @param str String to parse.
- * @param update_points If `true`, update the points table. If `false`, store
- *     this match for later.
+ * @param str String to parse. Expected to be two comma- or equals-separated
+ *     words.
+ * @param update_points Whether this match has already been played. If `true`,
+ *     update the points table. If `false`, store this match for later.
  *****************************************************************************/
 void
 PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
@@ -173,9 +175,11 @@ PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
 }
 
 /******************************************************************************
- * Parse a string as an entry of the points table.
+ * Parse a string as an entry of the points table. Update the points table
+ * accordingly.
  *
- * @param str String to parse.
+ * @param str String to parse. Expected to word and an integer separated by a
+ *     space.
  *****************************************************************************/
 void
 PointsTableProjector::parse_result(std::string const& str)
@@ -217,6 +221,8 @@ PointsTableProjector::reg(std::string const& tname)
 void
 PointsTableProjector::dump(void)
 {
+    // Arrange the teams in decreasing order of points. If two have the same
+    // points, place our favourite team at the lower index.
     std::vector<Team> teams(this->teams);
     std::sort(teams.rbegin(), teams.rend(), [&](Team const& a, Team const& b) {
         if (a.points > b.points) {
