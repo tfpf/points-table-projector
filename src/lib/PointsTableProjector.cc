@@ -1,9 +1,12 @@
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iterator>
+#include <random>
 #include <stdexcept>
 #include <string>
 
@@ -250,17 +253,48 @@ PointsTableProjector::dump(void)
 }
 
 /******************************************************************************
- * Find all possible results for our favourite team.
+ * Find all possible results for our favourite team (assuming they win all
+ * their fixtures).
  *****************************************************************************/
 void
 PointsTableProjector::solve(void)
 {
+    // Calculate the minimum and maximum points each team can earn.
+    std::vector<std::array<int, 2>> min_max(this->teams.size());
+    for (Team const& team : this->teams) {
+        min_max[team.tid][0] = min_max[team.tid][1] = team.points;
+    }
+    for (Fixture const& fixture : this->fixtures) {
+        // Assume our favourite team always wins, so its minimum and maximum
+        // points are the same.
+        if (fixture.a.tid == this->favourite_tid || fixture.b.tid == this->favourite_tid) {
+            min_max[this->favourite_tid][0] += this->points_win;
+            min_max[this->favourite_tid][1] += this->points_win;
+        }
+        if (fixture.a.tid != this->favourite_tid) {
+            min_max[fixture.a.tid][0] += this->points_lose;
+            min_max[fixture.a.tid][1] += this->points_win;
+        }
+        if (fixture.b.tid != this->favourite_tid) {
+            min_max[fixture.b.tid][0] += this->points_lose;
+            min_max[fixture.b.tid][1] += this->points_win;
+        }
+    }
+
+    // Which teams which will always finish with fewer/more points than our
+    // favourite team?
+    this->inconsequential.resize(this->teams.size(), false);
+    for (Team const& team : this->teams) {
+        this->inconsequential[team.tid] = min_max[team.tid][1] < min_max[this->favourite_tid][0]
+            || min_max[team.tid][0] > min_max[this->favourite_tid][1];
+    }
+
     this->solve_(0);
 }
 
 /******************************************************************************
- * Find all possible results for our favourite team starting from the specified
- * fixture, and assuming they win all their fixtures.
+ * Find all possible results for our favourite team (assuming they win all
+ * their fixtures) starting from the specified fixture.
  *
  * @param idx Fixture index.
  *****************************************************************************/
@@ -271,21 +305,49 @@ PointsTableProjector::solve_(std::size_t idx)
         this->dump();
         return;
     }
+
+    static std::random_device rdev;
+    static std::mt19937 mtwist(rdev());
+    static auto bgen = [&]() {
+        return static_cast<bool>(mtwist() & 1);
+    };
+
+    // If the outcome of this fixture does not matter, pick a winner randomly.
     Fixture& fixture = this->fixtures[idx];
+    if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid]) {
+        fixture.ordered = bgen();
+        if (!fixture.ordered) {
+            this->solve__(idx, fixture.b, fixture.a);
+        } else {
+            this->solve__(idx, fixture.a, fixture.b);
+        }
+        return;
+    }
+
+    // Assume that our favourite team always wins.
     if (fixture.a.tid != this->favourite_tid) {
         fixture.ordered = false;
-        fixture.a.points += this->points_lose;
-        fixture.b.points += this->points_win;
-        this->solve_(idx + 1);
-        fixture.a.points -= this->points_lose;
-        fixture.b.points -= this->points_win;
+        this->solve__(idx, fixture.b, fixture.a);
     }
     if (fixture.b.tid != this->favourite_tid) {
         fixture.ordered = true;
-        fixture.a.points += this->points_win;
-        fixture.b.points += this->points_lose;
-        this->solve_(idx + 1);
-        fixture.a.points -= this->points_win;
-        fixture.b.points -= this->points_lose;
+        this->solve__(idx, fixture.a, fixture.b);
     }
+}
+
+/******************************************************************************
+ * Recursion helper. Simulate the result of a fixture, recurse and unsimulate.
+ *
+ * @param idx Fixture index.
+ * @param winner
+ * @param loser
+ *****************************************************************************/
+void
+PointsTableProjector::solve__(std::size_t idx, Team& winner, Team& loser)
+{
+    winner.points += this->points_win;
+    loser.points += this->points_lose;
+    this->solve_(idx + 1);
+    loser.points -= this->points_lose;
+    winner.points -= this->points_win;
 }

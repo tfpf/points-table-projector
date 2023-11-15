@@ -23,6 +23,7 @@ private:
     void parse_result(std::string const& str);
     std::size_t reg(std::string const& tname);
     void solve_(std::size_t idx);
+    void solve__(std::size_t idx, Team& winner, Team& loser);
 
 private:
     std::string const fname;
@@ -36,6 +37,8 @@ private:
     std::vector<Team> teams;
     // Upcoming fixtures. (Completed fixtures are not stored.)
     std::vector<Fixture> fixtures;
+    // Teams whose performances do not affect our favourite team's position.
+    std::vector<bool> inconsequential;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_

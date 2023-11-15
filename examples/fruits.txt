@@ -2,14 +2,14 @@ team Banana
 
 fixtures.completed
 Apple,Orange
-Apple,Guava
-Guava,Banana
-Guava,Orange
-Orange,Banana
+Jackfruit,Guava
+Apple,Jackfruit
+Banana=Guava
+Orange,Guava
+Apple,Banana
 
 fixtures.upcoming
-Jackfruit,Apple
-Banana,Apple
+Orange,Banana
+Apple,Guava
 Orange,Jackfruit
-Guava,Jackfruit
 Jackfruit,Banana
