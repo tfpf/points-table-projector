@@ -58,20 +58,20 @@ play, separated by a comma <kbd>,</kbd>.
 ## Example
 Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Our favourite team is Banana.
 
-Four matches have been played.
+Six matches have been played.
 
 1. Apple beat Orange;
-1. Guava beat Banana;
-1. Guava beat Orange; and
-1. Orange beat Banana.
+1. Jackfruit beat Guava;
+1. Apple beat Jackfruit;
+1. Banana tied with Guava;
+1. Orange beat Guava; and
+1. Apple beat Banana.
 
-Six matches remain.
+Four matches remain.
 
+1. Orange v/s Banana;
 1. Apple v/s Guava;
-1. Jackfruit v/s Apple;
-1. Orange v/s Jackfruit;
-1. Guava v/s Jackfruit;
-1. Banana v/s Apple; and
+1. Orange v/s Jackfruit; and
 1. Jackfruit v/s Banana.
 
 You could write the input file like this:
@@ -81,16 +81,16 @@ team Banana
 
 fixtures.completed
 Apple,Orange
-Guava,Banana
-Guava,Orange
-Orange,Banana
+Jackfruit,Guava
+Apple,Jackfruit
+Banana=Guava
+Orange,Guava
+Apple,Banana
 
 fixtures.upcoming
+Orange,Banana
 Apple,Guava
-Jackfruit,Apple
 Orange,Jackfruit
-Guava,Jackfruit
-Banana,Apple
 Jackfruit,Banana
 ```
 
@@ -100,151 +100,82 @@ or like this.
 team Banana
 
 fixtures.results
-Apple 4
+Apple 6
 Orange 2
-Guava 4
-Banana 0
-Jackfruit 0
+Guava 1
+Banana 1
+Jackfruit 2
 
 fixtures.upcoming
-Jackfruit,Apple
-Banana,Apple
+Orange,Banana
+Apple,Guava
 Orange,Jackfruit
-Guava,Jackfruit
 Jackfruit,Banana
 ```
 
 The two ways are equivalent.
 
+# Processing
+## Favouritism
+The program assumes that our favourite team will win all their remaining matches.
+
+## Pruning
+If any match is found to be inconsequential, the program picks its result randomly (instead of exploring two
+possibilities, one in which the first team wins and the other in which the second team wins). A match is said to be
+inconsequential if it is played between two inconsequential teams. A team is said to be inconsequential if,
+irrespective of what happens, it always ends up with more or fewer points than our favourite team.
+
 # Output Format
-Assuming Banana win both of their remaining matches, there are eight different scenarios. The program outputs all of
-them.
+Ordinarily, since there are four matches left, there would have been 2<sup>4</sup> = 16 different scenarios. However,
+because of favouritism, the outcomes of the two matches to be played by Banana are fixed. Also, note that Banana cannot
+earn more points than Apple, and Guava cannot earn more points than Banana. This means that the match between Apple and
+Guava is inconsequential, so its result is picked randomly. Hence, only 2 scenarios are output.
 
 <details>
 
-<summary>Click to view the output.</summary>
+<summary>Click to view possible output.</summary>
 
 ```
 2
   fixtures.results
     Apple 6
-    Banana 4
-    Guava 4
+    Banana 5
     Jackfruit 4
+    Guava 3
     Orange 2
   fixtures.upcoming
-    Apple,Jackfruit
-    Banana,Apple
+    Banana,Orange
+    Guava,Apple
     Jackfruit,Orange
-    Jackfruit,Guava
-    Banana,Jackfruit
-3
-  fixtures.results
-    Apple 6
-    Guava 6
-    Banana 4
-    Orange 2
-    Jackfruit 2
-  fixtures.upcoming
-    Apple,Jackfruit
-    Banana,Apple
-    Jackfruit,Orange
-    Guava,Jackfruit
     Banana,Jackfruit
 2
   fixtures.results
     Apple 6
-    Banana 4
+    Banana 5
     Orange 4
-    Guava 4
+    Guava 3
     Jackfruit 2
   fixtures.upcoming
-    Apple,Jackfruit
-    Banana,Apple
+    Banana,Orange
+    Guava,Apple
     Orange,Jackfruit
-    Jackfruit,Guava
-    Banana,Jackfruit
-3
-  fixtures.results
-    Apple 6
-    Guava 6
-    Banana 4
-    Orange 4
-    Jackfruit 0
-  fixtures.upcoming
-    Apple,Jackfruit
-    Banana,Apple
-    Orange,Jackfruit
-    Guava,Jackfruit
-    Banana,Jackfruit
-2
-  fixtures.results
-    Jackfruit 6
-    Banana 4
-    Apple 4
-    Guava 4
-    Orange 2
-  fixtures.upcoming
-    Jackfruit,Apple
-    Banana,Apple
-    Jackfruit,Orange
-    Jackfruit,Guava
-    Banana,Jackfruit
-2
-  fixtures.results
-    Guava 6
-    Banana 4
-    Apple 4
-    Jackfruit 4
-    Orange 2
-  fixtures.upcoming
-    Jackfruit,Apple
-    Banana,Apple
-    Jackfruit,Orange
-    Guava,Jackfruit
-    Banana,Jackfruit
-1
-  fixtures.results
-    Banana 4
-    Apple 4
-    Orange 4
-    Guava 4
-    Jackfruit 4
-  fixtures.upcoming
-    Jackfruit,Apple
-    Banana,Apple
-    Orange,Jackfruit
-    Jackfruit,Guava
-    Banana,Jackfruit
-2
-  fixtures.results
-    Guava 6
-    Banana 4
-    Apple 4
-    Orange 4
-    Jackfruit 2
-  fixtures.upcoming
-    Jackfruit,Apple
-    Banana,Apple
-    Orange,Jackfruit
-    Guava,Jackfruit
     Banana,Jackfruit
 ```
 
 </details>
 
-In the last (i.e. eighth) scenario, Banana finish at position 2.
+In the first scenario, Banana finish at position 2.
 
-The final points table is shown under `fixtures.results`. Banana get 4 points in all. Guava top the table with 6
-points. Apple, Orange and Jackfruit end up with 4, 4 and 2 points respectively.
+The final points table is shown under `fixtures.results`. Banana get 5 points in all. Apple top the table with 6
+points. Jackfruit, Guava and Orange end up with 4, 3 and 2 points respectively.
 
 For the tournament to end like this, the events that must transpire are mentioned under `fixtures.upcoming`. (The name
 of the winning team is written first.)
-* Jackfruit must beat Apple;
-* Orange and Guava must beat Jackfruit; and
-* Banana must beat Apple and Jackfruit.
+* Banana must beat Orange and Jackfruit;
+* Guava must beat Apple; and
+* Jackfruit must beat Orange.
 
-Although Banana, Apple and Orange have the same points at the end, Banana is placed highest among them because the
+If multiple teams had earned the same points as Banana, Banana would have been placed highest among them, because the
 program is written to calculate the _best_ outcome for our favourite team.
 
-The other scenarios are interpreted similarly. Do check out the seventh scenario, in which Banana end up as toppers.
+The second scenario is interpreted similarly.
