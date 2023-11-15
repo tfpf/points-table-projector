@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
@@ -259,7 +260,7 @@ void
 PointsTableProjector::solve(void)
 {
     // Calculate the minimum and maximum points each team can earn.
-    std::vector<int[2]> min_max(this->teams.size());
+    std::vector<std::array<int, 2>> min_max(this->teams.size());
     for (Team const& team : this->teams) {
         min_max[team.tid][0] = min_max[team.tid][1] = team.points;
     }
