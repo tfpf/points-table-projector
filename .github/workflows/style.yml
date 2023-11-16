@@ -6,6 +6,6 @@ jobs:
     name: style
     runs-on: ubuntu-22.04
     steps:
-      - uses: apt install clang-format-14
       - uses: actions/checkout@v4
+      - run: apt install clang-format-14
       - run: clang-format --dry-run -Werror src/include/*.hh src/lib/*.cc
