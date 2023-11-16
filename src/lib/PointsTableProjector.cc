@@ -1,5 +1,5 @@
-#include <algorithm>
 #include <array>
+#include <algorithm>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>

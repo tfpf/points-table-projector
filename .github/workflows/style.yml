@@ -3,14 +3,9 @@ on: [push, workflow_dispatch]
 
 jobs:
   style:
-    name: style in ${{ matrix.path }}
+    name: style
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        path: ['src/include', 'src/lib']
     steps:
+      - uses: apt install clang-format-14
       - uses: actions/checkout@v4
-      - uses: jidicula/clang-format-action@v4.11.0
-        with:
-          clang-format-version: '14'
-          check-path: ${{ matrix.path }}
+      - run: clang-format --dry-run -Werror src/include/*.hh src/lib/*.cc
