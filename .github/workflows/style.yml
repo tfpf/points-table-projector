@@ -7,5 +7,5 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - run: apt install clang-format-14
+      - run: sudo apt install clang-format-14
       - run: clang-format --dry-run -Werror src/include/*.hh src/lib/*.cc
