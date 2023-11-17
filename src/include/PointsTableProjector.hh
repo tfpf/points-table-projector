@@ -9,7 +9,8 @@
 #include "Fixture.hh"
 #include "Team.hh"
 
-class PointsTableProjector {
+class PointsTableProjector
+{
 public:
     PointsTableProjector(std::string const& fname);
     void dump(void);
