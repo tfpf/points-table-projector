@@ -124,8 +124,7 @@ PointsTableProjector::parse(void)
 void
 PointsTableProjector::unknown_keyword_error(std::string const& str)
 {
-    THROW(std::invalid_argument,
-        "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
+    THROW(std::invalid_argument, "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
 }
 
 /******************************************************************************
