@@ -8,7 +8,8 @@
 /******************************************************************************
  * Store information about a fixture.
  *****************************************************************************/
-struct Fixture {
+struct Fixture
+{
     // These two members do not belong to this object. Their lifetime (and the
     // lifetime of this object) is entirely controlled by the class which
     // instantiates them.
