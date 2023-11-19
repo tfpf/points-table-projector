@@ -16,7 +16,7 @@ struct Fixture
     Team& a;
     Team& b;
     // Whether the first team won the fixture.
-    bool ordered = true;
+    bool ordered;
 
     Fixture(Team& a, Team& b);
 };

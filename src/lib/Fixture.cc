@@ -12,6 +12,7 @@
 Fixture::Fixture(Team& a, Team& b)
     : a(a)
     , b(b)
+    , ordered(false)
 {
 }
 

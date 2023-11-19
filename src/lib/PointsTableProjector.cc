@@ -27,6 +27,10 @@
  *****************************************************************************/
 PointsTableProjector::PointsTableProjector(std::string const& fname)
     : fname(fname)
+    , line_number(0)
+    , points_win(2)
+    , points_lose(0)
+    , points_other(1)
 {
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
