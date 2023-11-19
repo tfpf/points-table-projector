@@ -12,7 +12,7 @@ struct Team
 {
     std::string tname;
     std::size_t tid;
-    int points = 0;
+    int points;
 
     Team(std::string const& tname, std::size_t tid);
 };
