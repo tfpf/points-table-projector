@@ -10,4 +10,4 @@ project: $(Headers:=.gch) $(Objects)
 	$(CXX) $(LDFLAGS) -o $@ $(Objects)
 
 %.gch: %
-	$(CXX) $(CFLAGS) $<
+	$(CXX) $(CXXFLAGS) $<
