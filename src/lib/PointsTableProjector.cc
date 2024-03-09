@@ -266,15 +266,7 @@ PointsTableProjector::dump(void)
     std::sort(teams.rbegin(), teams.rend(),
         [&](Team const& a, Team const& b)
         {
-            if (a.points > b.points)
-            {
-                return false;
-            }
-            if (a.points < b.points || b.tid == this->favourite_tid)
-            {
-                return true;
-            }
-            return false;
+            return a.points < b.points || (a.points == b.points && b.tid == this->favourite_tid);
         });
     int rank = std::find_if(teams.begin(), teams.end(),
                    [&](Team const& t)
