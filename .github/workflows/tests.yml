@@ -11,6 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - shell: bash
-      - run: |
+        run: |
         make -j
         ./project examples/womens_premier_league_2024.txt
