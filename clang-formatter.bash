@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
-files=(src/include/*.hh src/lib/*.cc)
+shopt -s globstar
+
+cd "${0%/*}"
+files=(**/*.cc **/*.hh)
 if [ "$1" = check ]
 then
     clang-format --dry-run -Werror ${files[@]}
