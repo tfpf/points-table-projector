@@ -56,7 +56,7 @@ play, separated by a comma <kbd>,</kbd>.
 * All teams start with zero points.
 
 ## Example
-Teams Apple, Banana, Guava, Orange and Jackfruit compete in a tournament. Our favourite team is Banana.
+Teams Apple, Banana, Guava, Jackfruit and Orange compete in a tournament. Our favourite team is Banana.
 
 Six matches have been played.
 
@@ -127,9 +127,9 @@ irrespective of what happens, it always ends up with more or fewer points than o
 
 # Output Format
 Ordinarily, since there are four matches left, there would have been 2<sup>4</sup> = 16 different scenarios. However,
-because of favouritism, the outcomes of the two matches to be played by Banana are fixed. Also, note that Banana cannot
-earn more points than Apple, and Guava cannot earn more points than Banana. This means that the match between Apple and
-Guava is inconsequential, so its result is picked randomly. Hence, only 2 scenarios are output.
+because of favouritism, it is assumed that Banana will win both of their remaining matches. Also, note that Banana
+cannot earn more points than Apple, and Guava cannot earn more points than Banana. This means that the match between
+Apple and Guava is inconsequential, so its result is picked randomly. Hence, only 2 scenarios are output.
 
 <details>
 
