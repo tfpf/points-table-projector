@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   style:
-    name: C++
+    name: C++ style
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
