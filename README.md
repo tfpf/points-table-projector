@@ -24,7 +24,8 @@ performed. However, it turns out that if they won their remaining matches, they'
 There is a lot of output, so it may be difficult to understand.
 
 #### Gujarat Giants, Women's Premier League 2024
-As of 9 March 2024, Gujarat had won only one match, but they could still mathematically make it to the top three.
+As of 9 March 2024, Gujarat Giants had won only one match, but they could still mathematically make it to the top
+three.
 ```shell
 ./project examples/womens_premier_league_2024.txt
 ```
