@@ -30,4 +30,4 @@ three.
 ./project examples/womens_premier_league_2024.txt
 ```
 
-The output here is small emough to comprehend easily.
+The output here is small enough to comprehend easily.
