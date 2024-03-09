@@ -1,0 +1,14 @@
+team GujaratGiants
+
+fixtures.results
+MumbaiIndians 10
+DelhiCapitals 8
+RoyalChallengersBangalore 6
+UPWarriorz 6
+GujaratGiants 2
+
+fixtures.upcoming
+DelhiCapitals,RoyalChallengersBangalore
+GujaratGiants,UPWarriorz
+MumbaiIndians,RoyalChallengersBangalore
+DelhiCapitals,GujaratGiants
