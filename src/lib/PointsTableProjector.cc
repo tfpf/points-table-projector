@@ -275,12 +275,12 @@ PointsTableProjector::dump(void)
                    })
         - teams.begin() + 1;
     std::cout << rank << '\n';
-    std::cout << "  fixtures.results\n";
+    std::cout << "├─fixtures.results\n";
     for (Team const& team : teams)
     {
-        std::cout << "    " << team << '\n';
+        std::cout << "│   " << team << '\n';
     }
-    std::cout << "  fixtures.upcoming\n";
+    std::cout << "└─fixtures.upcoming\n";
     for (Fixture const& fixture : this->fixtures)
     {
         std::cout << "    " << fixture << '\n';
