@@ -137,25 +137,25 @@ Apple and Guava is inconsequential, so its result is picked randomly. Hence, onl
 
 ```
 2
-  fixtures.results
-    Apple 6
-    Banana 5
-    Jackfruit 4
-    Guava 3
-    Orange 2
-  fixtures.upcoming
+├─fixtures.results
+│   Apple 6
+│   Banana 5
+│   Jackfruit 4
+│   Guava 3
+│   Orange 2
+└─fixtures.upcoming
     Banana,Orange
     Guava,Apple
     Jackfruit,Orange
     Banana,Jackfruit
 2
-  fixtures.results
-    Apple 6
-    Banana 5
-    Orange 4
-    Guava 3
-    Jackfruit 2
-  fixtures.upcoming
+├─fixtures.results
+│   Apple 6
+│   Banana 5
+│   Orange 4
+│   Guava 3
+│   Jackfruit 2
+└─fixtures.upcoming
     Banana,Orange
     Guava,Apple
     Orange,Jackfruit
