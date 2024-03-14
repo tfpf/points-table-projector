@@ -38,8 +38,6 @@ private:
     std::vector<Team> teams;
     // Upcoming fixtures. (Completed fixtures are not stored.)
     std::vector<Fixture> fixtures;
-    // Teams whose performances do not affect our favourite team's position.
-    std::vector<bool> inconsequential;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_

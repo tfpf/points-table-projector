@@ -13,6 +13,9 @@ struct Team
     std::string tname;
     std::size_t tid;
     int points;
+    // Indicates that the performance of this team does not affect our
+    // favourite team's position.
+    bool inconsequential;
 
     Team(std::string const& tname, std::size_t tid);
 };

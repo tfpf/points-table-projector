@@ -14,6 +14,7 @@ Team::Team(std::string const& tname, std::size_t tid)
     : tname(tname)
     , tid(tid)
     , points(0)
+    , inconsequential(false)
 {
 }
 

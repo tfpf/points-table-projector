@@ -283,7 +283,14 @@ PointsTableProjector::dump(void)
     std::cout << "└─fixtures.upcoming\n";
     for (Fixture const& fixture : this->fixtures)
     {
-        std::cout << "    " << fixture << '\n';
+        if (fixture.inconsequential)
+        {
+            std::cout << "    \e[90m" << fixture << "\e[m\n";
+        }
+        else
+        {
+            std::cout << "    " << fixture << '\n';
+        }
     }
 }
 
@@ -323,11 +330,16 @@ PointsTableProjector::solve(void)
 
     // Which teams which will always finish with fewer/more points than our
     // favourite team?
-    this->inconsequential.resize(this->teams.size(), false);
-    for (Team const& team : this->teams)
+    for (Team& team : this->teams)
     {
-        this->inconsequential[team.tid] = min_max[team.tid][1] < min_max[this->favourite_tid][0]
+        team.inconsequential = min_max[team.tid][1] < min_max[this->favourite_tid][0]
             || min_max[team.tid][0] > min_max[this->favourite_tid][1];
+    }
+
+    // Which fixtures are between such teams?
+    for (Fixture& fixture : this->fixtures)
+    {
+        fixture.inconsequential = fixture.a.inconsequential && fixture.b.inconsequential;
     }
 
     this->solve_(0);
@@ -357,7 +369,7 @@ PointsTableProjector::solve_(std::size_t idx)
 
     // If the outcome of this fixture does not matter, pick a winner randomly.
     Fixture& fixture = this->fixtures[idx];
-    if (this->inconsequential[fixture.a.tid] && this->inconsequential[fixture.b.tid])
+    if (fixture.inconsequential)
     {
         fixture.ordered = bgen();
         if (!fixture.ordered)
