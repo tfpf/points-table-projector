@@ -6,5 +6,8 @@ Headers = $(wildcard src/include/*.hh)
 Sources = $(wildcard src/lib/*.cc)
 Objects = $(Sources:.cc=.o)
 
-project: $(Headers) $(Objects)
+project: $(Headers:=.gch) $(Objects)
 	$(CXX) $(LDFLAGS) -o $@ $(Objects)
+
+%.gch: %
+	$(CXX) $<
