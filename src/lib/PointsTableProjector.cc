@@ -24,8 +24,9 @@
  * Constructor.
  *
  * @param fname Input file name.
+ * @param raw_output Whether to show plain output (i.e. without colours).
  *****************************************************************************/
-PointsTableProjector::PointsTableProjector(std::string const& fname)
+PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_output)
     : fname(fname)
     , line_number(0)
     , points_win(2)
@@ -36,6 +37,16 @@ PointsTableProjector::PointsTableProjector(std::string const& fname)
     // references to its elements in another member.
     this->teams.reserve(1024);
     this->parse();
+    if (raw_output)
+    {
+        this->inconsequential_begin = "";
+        this->inconsequential_end = "";
+    }
+    else
+    {
+        this->inconsequential_begin = "\e[90m";
+        this->inconsequential_end = "\e[m";
+    }
 }
 
 /******************************************************************************
@@ -285,7 +296,7 @@ PointsTableProjector::dump(void)
     {
         if (fixture.inconsequential)
         {
-            std::cout << "    \e[90m" << fixture << "\e[m\n";
+            std::cout << "    " << this->inconsequential_begin << fixture << this->inconsequential_end << '\n';
         }
         else
         {

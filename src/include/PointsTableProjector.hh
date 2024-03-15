@@ -12,7 +12,7 @@
 class PointsTableProjector
 {
 public:
-    PointsTableProjector(std::string const& fname);
+    PointsTableProjector(std::string const& fname, bool raw_output);
     void dump(void);
     void solve(void);
 
@@ -38,6 +38,9 @@ private:
     std::vector<Team> teams;
     // Upcoming fixtures. (Completed fixtures are not stored.)
     std::vector<Fixture> fixtures;
+    // Output decorations.
+    char const* inconsequential_begin;
+    char const* inconsequential_end;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
