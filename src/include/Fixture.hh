@@ -17,6 +17,9 @@ struct Fixture
     Team& b;
     // Whether the first team won the fixture.
     bool ordered;
+    // Indicates that the result of this fixture does not affect our favourite
+    // team's position.
+    bool inconsequential;
 
     Fixture(Team& a, Team& b);
 };
