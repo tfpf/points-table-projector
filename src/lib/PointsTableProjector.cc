@@ -32,6 +32,12 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , points_win(2)
     , points_lose(0)
     , points_other(1)
+    , box_horizontal("─")
+    , box_up_right("└")
+    , box_vertical("│")
+    , box_vertical_right("├")
+    , inconsequential_begin("\e[90m")
+    , inconsequential_end("\e[m")
 {
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
@@ -39,13 +45,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     this->parse();
     if (raw_output)
     {
-        this->inconsequential_begin = "";
-        this->inconsequential_end = "";
-    }
-    else
-    {
-        this->inconsequential_begin = "\e[90m";
-        this->inconsequential_end = "\e[m";
+        this->box_horizontal = this->box_up_right = this->box_vertical = this->box_vertical_right = " ";
+        this->inconsequential_begin = this->inconsequential_end = "";
     }
 }
 
@@ -286,12 +287,12 @@ PointsTableProjector::dump(void)
                    })
         - teams.begin() + 1;
     std::cout << rank << '\n';
-    std::cout << "├─fixtures.results\n";
+    std::cout << this->box_vertical_right << this->box_horizontal << "fixtures.results\n";
     for (Team const& team : teams)
     {
-        std::cout << "│   " << team << '\n';
+        std::cout << this->box_vertical << "   " << team << '\n';
     }
-    std::cout << "└─fixtures.upcoming\n";
+    std::cout << this->box_up_right << this->box_horizontal << "fixtures.upcoming\n";
     for (Fixture const& fixture : this->fixtures)
     {
         if (fixture.inconsequential)
