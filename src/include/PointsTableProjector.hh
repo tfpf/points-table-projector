@@ -39,6 +39,10 @@ private:
     // Upcoming fixtures. (Completed fixtures are not stored.)
     std::vector<Fixture> fixtures;
     // Output decorations.
+    char const* box_horizontal;
+    char const* box_up_right;
+    char const* box_vertical;
+    char const* box_vertical_right;
     char const* inconsequential_begin;
     char const* inconsequential_end;
 };
