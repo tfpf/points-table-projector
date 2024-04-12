@@ -3,8 +3,8 @@
 ./project [options] [file]
 ```
 
-`[options]` can be `-r` (to display the output without colours) or omitted (to display it with colours). `[file]` is
-the input file.
+`[options]` can be `-r` (to display the output without decorations) or omitted (to display it with decorations).
+`[file]` is the input file.
 
 # Input File Format
 The input file must contain keywords describing several aspects of the tournament.
@@ -184,7 +184,8 @@ of the winning team is written first.)
 * Jackfruit must beat Orange.
 
 The match between Apple and Guava will be written in a duller colour to emphasise the fact that it is inconsequential
-with respect to Banana. (Use the `-r` option to disable colours.)
+with respect to Banana. (Use the `-r` option to display raw output, i.e. without the duller colour and the lines to the
+left of the text.)
 
 If multiple teams had earned the same points as Banana, Banana would have been placed highest among them, because the
 program is written to calculate the _best_ outcome for our favourite team.
