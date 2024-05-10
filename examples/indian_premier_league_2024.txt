@@ -1,0 +1,26 @@
+team RoyalChallengersBengaluru
+
+fixtures.results
+KolkataKnightRiders 16
+RajasthanRoyals 16
+SunrisersHyderabad 14
+ChennaiSuperKings 12
+DelhiCapitals 12
+LucknowSuperGiants 12
+RoyalChallengersBengaluru 10
+GujaratTitans 10
+MumbaiIndians 8
+PunjabKings 8
+
+fixtures.upcoming
+KolkataKnightRiders,MumbaiIndians
+ChennaiSuperKings,RajasthanRoyals
+RoyalChallengersBengaluru,DelhiCapitals
+GujaratTitans,KolkataKnightRiders
+DelhiCapitals,LucknowSuperGiants
+RajasthanRoyals,PunjabKings
+SunrisersHyderabad,GujaratTitans
+MumbaiIndians,LucknowSuperGiants
+RoyalChallengersBengaluru,ChennaiSuperKings
+SunrisersHyderabad,PunjabKings
+RajasthanRoyals,KolkataKnightRiders
