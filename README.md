@@ -31,3 +31,9 @@ three.
 ```
 
 The output here is small enough to comprehend easily.
+
+#### Royal Challengers Bengaluru, Indian Premier League 2024
+As of 10 May 2024, Royal Challengers Bengaluru were still in contention for a position in the top four slots.
+```shell
+./project examples/indian_premier_league_2024.txt
+```
