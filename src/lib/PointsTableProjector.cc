@@ -373,7 +373,7 @@ PointsTableProjector::solve_(std::size_t idx)
     }
 
     static std::random_device rdev;
-    static std::mt19937 mtwist(rdev());
+    static std::mt19937 mtwist(69899617);
     static auto bgen = [&]()
     {
         return static_cast<bool>(mtwist() & 1);

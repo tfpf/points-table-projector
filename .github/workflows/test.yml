@@ -1,0 +1,15 @@
+name: build
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          make -j
+          ./project examples/cricket_world_cup_2023.txt >> output.txt
+          ./project examples/fruits.txt >> output.txt
+          ./project examples/indian_premier_league_2024.txt >> output.txt
+          ./project examples/womens_premier_league_2024.txt >> output.txt
+          [ $(sha256sum output.txt) = 36ccfd591868a4a26871f82755b95fb735417c0929ec01658a51dd6fa34fd2f4 ]
