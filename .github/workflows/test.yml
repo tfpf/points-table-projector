@@ -1,8 +1,8 @@
-name: build
+name: test
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -12,4 +12,4 @@ jobs:
           ./project examples/fruits.txt >> output.txt
           ./project examples/indian_premier_league_2024.txt >> output.txt
           ./project examples/womens_premier_league_2024.txt >> output.txt
-          [ $(sha256sum output.txt) = 36ccfd591868a4a26871f82755b95fb735417c0929ec01658a51dd6fa34fd2f4 ]
+          [ $(sha256sum output.txt | awk '{print $1}') = 36ccfd591868a4a26871f82755b95fb735417c0929ec01658a51dd6fa34fd2f4 ]
