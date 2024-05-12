@@ -104,11 +104,25 @@ PointsTableProjector::parse(void)
         }
         if (line == "table")
         {
+            if (!this->teams.empty())
+            {
+                CLOG("Cannot specify points table in {}:{} because points table or completed fixtures have already "
+                     "been specified.",
+                    this->fname, this->line_number);
+                throw std::runtime_error("parse failure");
+            }
             this->parse_points_table(fhandle);
             continue;
         }
         if (line == "completed")
         {
+            if (!this->teams.empty())
+            {
+                CLOG("Cannot specify completed fixtures in {}:{} because points table or completed fixtures have "
+                     "already been specified.",
+                    this->fname, this->line_number);
+                throw std::runtime_error("parse failure");
+            }
             this->parse_fixture(fhandle, true);
             continue;
         }
@@ -117,6 +131,19 @@ PointsTableProjector::parse(void)
             this->parse_fixture(fhandle, false);
             continue;
         }
+        CLOG("Expected a known section in {}:{}. Found '{}'.", this->fname, this->line_number, line);
+        throw std::runtime_error("parse failure");
+    }
+
+    if (this->favourite_tname.empty())
+    {
+        CLOG("Favourite team not specified in {}.", this->fname);
+        throw std::runtime_error("parse failure");
+    }
+    if (this->upcoming_fixtures.empty())
+    {
+        CLOG("Upcoming fixtures not specified in {}.", this->fname);
+        throw std::runtime_error("parse failure");
     }
 }
 
