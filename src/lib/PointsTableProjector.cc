@@ -110,9 +110,11 @@ PointsTableProjector::parse(void)
         {
             if (!this->teams.empty())
             {
-                CLOG("Cannot specify points table in {}:{} because points table or completed fixtures have already "
-                     "been specified.",
-                    this->fname, this->line_number);
+                CLOG(
+                    "Cannot specify points table in {}:{} because points table or completed fixtures have already "
+                    "been specified.",
+                    this->fname, this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_points_table(fhandle);
@@ -122,9 +124,11 @@ PointsTableProjector::parse(void)
         {
             if (!this->teams.empty())
             {
-                CLOG("Cannot specify completed fixtures in {}:{} because points table or completed fixtures have "
-                     "already been specified.",
-                    this->fname, this->line_number);
+                CLOG(
+                    "Cannot specify completed fixtures in {}:{} because points table or completed fixtures have "
+                    "already been specified.",
+                    this->fname, this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_fixture(fhandle, true);
@@ -208,14 +212,18 @@ PointsTableProjector::parse_points(std::ifstream& fhandle)
         }
         else
         {
-            CLOG("Expected 'win', 'loss' or 'other', and an integer in {}:{}. Found '{}'.", this->fname,
-                this->line_number, line);
+            CLOG(
+                "Expected 'win', 'loss' or 'other', and an integer in {}:{}. Found '{}'.", this->fname,
+                this->line_number, line
+            );
             throw std::runtime_error("parse failure");
         }
         if (line_stream.fail())
         {
-            CLOG("Expected an integer after 'win', 'loss' or 'other' in {}:{}. Found '{}'.", this->fname,
-                this->line_number, line);
+            CLOG(
+                "Expected an integer after 'win', 'loss' or 'other' in {}:{}. Found '{}'.", this->fname,
+                this->line_number, line
+            );
             throw std::runtime_error("parse failure");
         }
     }
@@ -285,8 +293,10 @@ PointsTableProjector::parse_fixture(std::ifstream& fhandle, bool completed)
         std::size_t equals_idx = line.find('=');
         if (comma_idx == equals_idx || (comma_idx != std::string::npos && equals_idx != std::string::npos))
         {
-            CLOG("Expected two teams separated by either ',' or '=' in {}:{}. Found '{}'.", this->fname,
-                this->line_number, line);
+            CLOG(
+                "Expected two teams separated by either ',' or '=' in {}:{}. Found '{}'.", this->fname,
+                this->line_number, line
+            );
             throw std::runtime_error("parse failure");
         }
         std::size_t idx = comma_idx != std::string::npos ? comma_idx : equals_idx;
@@ -344,16 +354,20 @@ PointsTableProjector::dump(void)
     // Arrange the teams in decreasing order of points. If two have the same
     // points, place our favourite team at the lower index.
     std::vector<Team> teams(this->teams);
-    std::sort(teams.rbegin(), teams.rend(),
+    std::sort(
+        teams.rbegin(), teams.rend(),
         [&](Team const& a, Team const& b)
         {
             return a.points < b.points || (a.points == b.points && b.tid == this->favourite_tid);
-        });
-    int rank = std::find_if(teams.begin(), teams.end(),
+        }
+    );
+    int rank = std::find_if(
+                   teams.begin(), teams.end(),
                    [&](Team const& t)
                    {
                        return t.tid == this->favourite_tid;
-                   })
+                   }
+               )
         - teams.begin() + 1;
     std::cout << rank << '\n';
     std::cout << this->box_vertical_right << this->box_horizontal << this->section_begin << "table"
