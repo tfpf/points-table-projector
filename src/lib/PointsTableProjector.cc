@@ -140,6 +140,7 @@ PointsTableProjector::parse(void)
         CLOG("Favourite team not specified in {}.", this->fname);
         throw std::runtime_error("parse failure");
     }
+    this->favourite_tid = this->tname_to_tid(this->favourite_tname);
     if (this->upcoming_fixtures.empty())
     {
         CLOG("Upcoming fixtures not specified in {}.", this->fname);
@@ -166,7 +167,6 @@ PointsTableProjector::parse_favourite_team(std::ifstream& fhandle)
         }
         this->favourite_tname = line;
     }
-    this->favourite_tid = this->tname_to_tid(this->favourite_tname);
     CLOG("Set favourite team to '{}'.", this->favourite_tname);
 }
 
@@ -438,7 +438,7 @@ PointsTableProjector::solve_(std::size_t idx)
     }
 
     static std::random_device rdev;
-    static std::mt19937 mtwist(69899617);
+    static std::mt19937 mtwist(rdev());
     static auto bgen = [&]()
     {
         return static_cast<bool>(mtwist() & 1);
