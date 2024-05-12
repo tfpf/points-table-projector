@@ -1,3 +1,4 @@
+#include <format>
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -9,6 +10,7 @@
 #include <random>
 #include <stdexcept>
 #include <string>
+#include <chrono>
 
 #include "Fixture.hh"
 #include "PointsTableProjector.hh"
@@ -19,6 +21,18 @@
     {                                                                                                                 \
         throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);           \
     } while (false)
+
+
+#define CLOG(...) clog(__FILE__, __LINE__, __VA_ARGS__)
+
+template<class...Args>
+void clog(char const* _file_, int _line_, std::format_string<Args...> const fmt, Args&&... args)
+{
+    auto const now = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
+    std::clog << "\e[34m" << std::format("{:%F %T}", now) << "\e[m ";
+    std::clog << "\e[94m" << _file_ << ':' << _line_ << "\e[m ";
+    std::clog << std::vformat(fmt.get(), std::make_format_args(args...)) << '\n';
+}
 
 /******************************************************************************
  * Constructor.
@@ -39,6 +53,7 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , inconsequential_begin("\e[90m")
     , inconsequential_end("\e[m")
 {
+    CLOG("constructing {} {}", "stuff", 1);
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
     this->teams.reserve(1024);
