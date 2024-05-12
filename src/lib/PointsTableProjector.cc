@@ -136,6 +136,14 @@ PointsTableProjector::parse(void)
         }
         if (line == "upcoming")
         {
+            if (!this->upcoming_fixtures.empty())
+            {
+                CLOG(
+                    "Cannot specify upcoming fixtures in {}:{} because they have already been specified.", this->fname,
+                    this->line_number
+                );
+                throw std::runtime_error("parse failure");
+            }
             this->parse_fixture(fhandle, false);
             continue;
         }
