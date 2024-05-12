@@ -47,6 +47,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , box_vertical_right("├")
     , inconsequential_begin("\e[90m")
     , inconsequential_end("\e[m")
+    , section_begin("[\e[32m")
+    , section_end("\e[m]")
 {
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
@@ -56,6 +58,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     {
         this->box_horizontal = this->box_up_right = this->box_vertical = this->box_vertical_right = " ";
         this->inconsequential_begin = this->inconsequential_end = "";
+        this->section_begin = "[";
+        this->section_end = "]";
     }
 }
 
@@ -352,21 +356,23 @@ PointsTableProjector::dump(void)
                    })
         - teams.begin() + 1;
     std::cout << rank << '\n';
-    std::cout << this->box_vertical_right << this->box_horizontal << "fixtures.results\n";
+    std::cout << this->box_vertical_right << this->box_horizontal << this->section_begin << "table"
+              << this->section_end << '\n';
     for (Team const& team : teams)
     {
-        std::cout << this->box_vertical << "   " << team << '\n';
+        std::cout << this->box_vertical << " " << team << '\n';
     }
-    std::cout << this->box_up_right << this->box_horizontal << "fixtures.upcoming\n";
+    std::cout << this->box_up_right << this->box_horizontal << this->section_begin << "upcoming" << this->section_end
+              << '\n';
     for (Fixture const& fixture : this->upcoming_fixtures)
     {
         if (fixture.inconsequential)
         {
-            std::cout << "    " << this->inconsequential_begin << fixture << this->inconsequential_end << '\n';
+            std::cout << "  " << this->inconsequential_begin << fixture << this->inconsequential_end << '\n';
         }
         else
         {
-            std::cout << "    " << fixture << '\n';
+            std::cout << "  " << fixture << '\n';
         }
     }
 }

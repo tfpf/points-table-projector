@@ -46,6 +46,8 @@ private:
     char const* box_vertical_right;
     char const* inconsequential_begin;
     char const* inconsequential_end;
+    char const* section_begin;
+    char const* section_end;
 };
 
 #endif  // TFPF_POINTS_TABLE_PROJECTOR_SRC_INCLUDE_POINTSTABLEPROJECTOR_HH_
