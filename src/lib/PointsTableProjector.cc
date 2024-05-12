@@ -1,4 +1,5 @@
 #include <format>
+#include <sstream>
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -18,7 +19,7 @@
 
 #define THROW(exc, msg)                                                                                               \
     do                                                                                                                \
-    {                                                                                                                 \
+    {                                             \
         throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);           \
     } while (false)
 
@@ -53,7 +54,6 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , inconsequential_begin("\e[90m")
     , inconsequential_end("\e[m")
 {
-    CLOG("constructing {} {}", "stuff", 1);
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
     this->teams.reserve(1024);
@@ -71,113 +71,88 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
 void
 PointsTableProjector::parse(void)
 {
+    CLOG("Attempting to open {} for reading.", this->fname);
+    if(!std::filesystem::is_regular_file(this->fname)){
+        CLOG("Cannot open {}: not a regular file.", this->fname);
+        throw std::runtime_error("invalid input");
+    }
     std::ifstream fhandle(this->fname);
-    if (!fhandle.good() || !std::filesystem::is_regular_file(this->fname))
+    if (!fhandle.good())
     {
-        THROW(std::runtime_error, "Could not read '" + this->fname + "'.");
+        CLOG("Cannot open {} for reading.", this->fname);
+        throw std::runtime_error("I/O error");
     }
-    std::string favourite_tname;
-    while (true)
+
+    std::string line;
+    while(std::getline(fhandle, line))
     {
-        std::string readline;
         ++this->line_number;
-        if (!std::getline(fhandle, readline))
-        {
-            break;
+        if(line.empty()){continue;}
+
+        if(!line.starts_with('[') || !line.ends_with(']')) {
+            CLOG("Expected a section in {}:{}. Found '{}'.", this->fname, this->line_number, line);
+            throw std::runtime_error("parse failure");
         }
-        if (readline.empty())
-        {
+        line = line.substr(1, line.size() - 2);
+        if(line == "team"){
+            this->parse_favourite_tname(fhandle);
             continue;
         }
-        // C++11 and newer strings are guaranteed to end with a null character,
-        // so it is safe to take the address of a character and treat it as a C
-        // string, as seen below.
-        if (readline.rfind("points.win", 0) == 0)
-        {
-            this->parse_int(&readline[10], this->points_win);
+        if(line == "points"){
+            this->parse_points(fhandle);
             continue;
         }
-        if (readline.rfind("points.lose", 0) == 0)
-        {
-            this->parse_int(&readline[11], this->points_lose);
+        if(line == "completed"){
+            this->set_completed(fhandle);
             continue;
         }
-        if (readline.rfind("points.other", 0) == 0)
-        {
-            this->parse_int(&readline[12], this->points_other);
-            continue;
-        }
-        if (readline.rfind("team", 0) == 0)
-        {
-            // If this word is followed by nothing or a space, do not error
-            // out. Otherwise, identify it as the error it is.
-            if (readline[4] == ' ')
-            {
-                favourite_tname = readline.substr(5, std::string::npos);
-            }
-            else if (readline[4] != '\0')
-            {
-                this->unknown_keyword_error(readline);
-            }
-            continue;
-        }
-        if (readline == "fixtures.completed" || readline == "fixtures.results")
-        {
-            if (!this->teams.empty())
-            {
-                THROW(std::invalid_argument,
-                    "'" + readline + "' found in '" + this->fname + "' on line " + std::to_string(this->line_number)
-                        + ", but one of 'fixtures.completed', 'fixtures.results' and 'fixtures.upcoming' has already "
-                          "been used previously.");
-            }
-            bool completed_or_results = readline == "fixtures.completed";
-            while (std::getline(fhandle, readline) && !readline.empty())
-            {
-                ++this->line_number;
-                completed_or_results ? this->parse_fixture(readline, true) : this->parse_result(readline);
-            }
-            ++this->line_number;
-            continue;
-        }
-        if (readline == "fixtures.upcoming")
-        {
-            while (std::getline(fhandle, readline) && !readline.empty())
-            {
-                ++this->line_number;
-                this->parse_fixture(readline, false);
-            }
-            ++this->line_number;
-            continue;
-        }
-        this->unknown_keyword_error(readline);
     }
-    if (favourite_tname.empty())
-    {
-        THROW(std::runtime_error, "Favourite team not specified in '" + this->fname + "'.");
-    }
-    auto tname_tid_it = this->tname_tid.find(favourite_tname);
-    if (tname_tid_it == this->tname_tid.end())
-    {
-        THROW(std::runtime_error, "No fixtures involving '" + favourite_tname + "' found in '" + this->fname + "'.");
-    }
-    this->favourite_tid = tname_tid_it->second;
-    if (this->fixtures.empty())
-    {
-        THROW(std::runtime_error, "'fixtures.upcoming' empty or not specified in '" + this->fname + "'.");
-    }
+    throw std::runtime_error("");
 }
 
-/******************************************************************************
- * Generic error.
- *
- * @param str String which led to the error.
- *****************************************************************************/
-void
-PointsTableProjector::unknown_keyword_error(std::string const& str)
-{
-    THROW(std::invalid_argument,
-        "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
+void PointsTableProjector::parse_favourite_tname(std::ifstream& fhandle){
+    CLOG("Parsing favourite team.");
+    std::string line;
+    while(std::getline(fhandle, line)){
+        ++this->line_number;
+        if(line.empty()){break;}
+        this->favourite_tname = line;
+    }
+    if(this->favourite_tname.empty()){
+        CLOG("Favourite team not specified in {}.", this->fname);
+        throw std::runtime_error("parse failure");
+    }
+    CLOG("Set favourite team to {}.", this->favourite_tname);
 }
+
+
+void PointsTableProjector::parse_points(std::ifstream& fhandle){
+    CLOG("Parsing points.");
+    std::string line;
+    while(std::getline(fhandle, line)){
+        ++this->line_number;
+        if(line.empty()){break;}
+        std::istringstream line_stream(line);
+        std::string outcome;
+        line_stream >> outcome;
+        if(outcome == "win"){
+            line_stream >> this->points_win;
+        } else if(outcome == "lose"){line_stream >> this->points_lose;}
+        else if(outcome == "other"){line_stream >> this->points_other;}
+        else {
+            CLOG("Expected 'win', 'lose' or 'other', and an integer in {}:{}. Found '{}'.", this->fname, this->line_number, line);
+            throw std::runtime_error("parse failure");
+        }
+        if(line_stream.fail()){
+            CLOG("Expected an integer after 'win', 'lose' or 'other' in {}:{}. Found '{}'.", this->fname, this->line_number, line);
+            throw std::runtime_error("parse failure");
+        }
+    }
+    CLOG("Set points in case of a win to {}.", this->points_win);
+    CLOG("Set points in case of a loss to {}.", this->points_lose);
+    CLOG("Set points in other cases to {}.", this->points_other);
+}
+
 
 /******************************************************************************
  * Parse a string as an integer. Store it in the specified variable.

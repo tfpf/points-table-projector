@@ -18,7 +18,8 @@ public:
 
 private:
     void parse(void);
-    void unknown_keyword_error(std::string const& str);
+    void parse_favourite_tname(std::ifstream& fhandle);
+    void parse_points(std::ifstream& fhandle);
     void parse_int(std::string const& str, int& var);
     void parse_fixture(std::string const& str, bool update_points);
     void parse_result(std::string const& str);
@@ -32,6 +33,7 @@ private:
     int points_win;
     int points_lose;
     int points_other;
+    std::string favourite_tname;
     std::size_t favourite_tid;
     // Mapping between team names and team IDs.
     std::unordered_map<std::string, std::size_t const> tname_tid;
