@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          make -j
+          make -j CC=g++13
           ./project examples/cricket_world_cup_2023.txt >> output.txt
           ./project examples/fruits.txt >> output.txt
           ./project examples/indian_premier_league_2024.txt >> output.txt
