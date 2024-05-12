@@ -1,6 +1,7 @@
-team Banana
+[team]
+Banana
 
-fixtures.completed
+[completed]
 Apple,Orange
 Jackfruit,Guava
 Apple,Jackfruit
@@ -8,7 +9,7 @@ Banana=Guava
 Orange,Guava
 Apple,Banana
 
-fixtures.upcoming
+[upcoming]
 Orange,Banana
 Apple,Guava
 Orange,Jackfruit

@@ -1,10 +1,12 @@
-points.win 2
-points.lose 0
-points.other 1
+[points]
+win 2
+lose 0
+other 1
 
-team NewZealand
+[team]
+NewZealand
 
-fixtures.completed
+[completed]
 NewZealand,England
 Pakistan,Netherlands
 Bangladesh,Afghanistan
@@ -40,7 +42,7 @@ SouthAfrica,NewZealand
 India,SriLanka
 Afghanistan,Netherlands
 
-fixtures.upcoming
+[upcoming]
 Pakistan,NewZealand
 Australia,England
 India,SouthAfrica
