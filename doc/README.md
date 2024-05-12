@@ -49,7 +49,9 @@ Banana
 The points table. Each entry of the table must be on a separate line. An entry is described by the name of a team and
 the points it has earned so far.
 * If this section is not specified, it is assumed that no fixtures have been played yet.
-* If this section is specified, the `[completed]` section must not be specified.
+* If this section is specified,
+  * it must be before the `[upcoming]` section; and
+  * the `[completed]` section must not be specified.
 
 #### Examples
 ```
@@ -74,7 +76,9 @@ Tournament fixtures which have been completed. Each fixture must be on a separat
 names of the two teams which played. If the fixture was tied or drawn or similar, an equals sign <kbd>=</kbd> must
 separate them. Else, a comma <kbd>,</kbd> must separate them, and the winner must be written first.
 * If this section is not specified, it is assumed that no fixtures have been played yet.
-* If this section is specified, the `[table]` section must not be specified.
+* If this section is specified,
+  * it must be before the `[upcoming]` section; and
+  * the `[table]` section must not be specified.
 
 #### Examples
 ```
