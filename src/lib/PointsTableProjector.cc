@@ -47,7 +47,7 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , box_vertical_right("├")
     , inconsequential_begin("\e[90m")
     , inconsequential_end("\e[m")
-    , section_begin("[\e[32m")
+    , section_begin("[\e[92m")
     , section_end("\e[m]")
 {
     // Prevent reallocation in this member, because we are going to store
