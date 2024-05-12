@@ -53,6 +53,7 @@ the points it has earned so far.
 
 #### Examples
 ```
+[table]
 LondonLightbringers 2
 TokyoTacticians 0
 CairoChampions 2
@@ -60,6 +61,7 @@ ParisPursuers 2
 ```
 
 ```
+[table]
 Apple 6
 Orange 2
 Guava 1
@@ -112,7 +114,7 @@ Jackfruit,Banana
 ```
 
 ## Notes
-* Team names are case-sensitive.
+* Team names are case-sensitive, and must not contain spaces.
 * The maximum number of teams supported is 1024.
   * This is not a hard limit. You can increase it simply by changing the number in the constructor of
     `PointsTableProjector`.
