@@ -7,24 +7,75 @@
 `[file]` is the input file.
 
 # Input File Format
-The input file must contain keywords describing several aspects of the tournament.
+The input file must contain several sections, with a blank line between consecutive sections. A section is defined as
+a sequence of non-blank lines, the first of which contains a single word in square brackets <kbd>[</kbd><kbd>]</kbd>.
 
-## Keywords
-#### `points.win`
-Must be followed by a space and a number indicating how many points are earned by the winner of a match. Optional;
-defaults to 2.
+## Sections
+### `[points]`
+The number of points earned by a team in case of a win, loss or any other result. These must be on separate lines.
+* If this section is not specified, the three values will default to 2, 0 and 1 respectively.
+* If this section is specified, but any of the three values are not provided, the aforementioned default values will be
+  used for them.
 
-#### `points.lose`
-Must be followed by a space and a number indicating how many points are earned by the loser of a match. Optional;
-defaults to 0.
+#### Examples
+```
+[points]
+win 3
+loss -1
+```
 
-#### `points.other`
-Must be followed by a space and a number indicating how many points are earned by each of the two teams if their match
-was drawn or tied or similar. Optional; defaults to 1.
+```
+[points]
+loss -2
+other 0
+```
 
-#### `team`
-Must be followed by a space and the name of your favourite team (i.e. the team whose possible outcomes you'd like to
-see).
+```
+[points]
+win 3
+loss 1
+other 2
+```
+
+### `[team]`
+The name of your favourite team (i.e. the team whose possible outcomes you'd like to see).
+
+#### Examples
+```
+[team]
+TokyoTacticians
+```
+
+```
+[team]
+Banana
+```
+
+### `[completed]`
+Tournament fixtures which have been completed. Each fixture must be on a separate line. A fixture is described by the
+names of the two teams it was played between. If the fixture was tied or drawn of similar, an equals sign <kbd>=</kbd>
+must separate them. Else, a comma <kbd>,</kbd> must separate them, and the winner must be written first.
+
+* If this section is not specified, it is assumed that no fixtures have been played yet.
+* If this section is specified, the `[table]` section must not be specified.
+
+#### Examples
+```
+[completed]
+LondonLightbringers,TokyoTacticians
+CairoChampions,ParisPursuers
+ParisPursuers,TokyoTacticians
+```
+
+```
+[completed]
+Apple,Orange
+Jackfruit,Guava
+Apple,Jackfruit
+Banana=Guava
+Orange,Guava
+Apple,Banana
+```
 
 #### `fixtures.completed`
 Must be followed by a list of matches which have already been played. (The end of the list is indicated by a blank

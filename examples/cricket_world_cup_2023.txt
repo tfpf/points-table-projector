@@ -1,6 +1,6 @@
 [points]
 win 2
-lose 0
+loss 0
 other 1
 
 [team]
