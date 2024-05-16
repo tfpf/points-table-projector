@@ -12,14 +12,14 @@
 class PointsTableProjector
 {
 public:
-    PointsTableProjector(std::string const& fname, bool raw_output);
+    PointsTableProjector(char const* fname, bool raw_output);
     void dump(void);
     void solve(void);
 
 private:
     void parse(void);
-    void parse_favourite_team(std::ifstream& fhandle);
     void parse_points(std::ifstream& fhandle);
+    void parse_favourite_team(std::ifstream& fhandle);
     void parse_points_table(std::ifstream& fhandle);
     void parse_fixture(std::ifstream& fhandle, bool completed);
     std::size_t tname_to_tid(std::string const& tname);
@@ -27,7 +27,7 @@ private:
     void solve__(std::size_t idx, Team& winner, Team& loser);
 
 private:
-    std::string const fname;
+    char const* fname;
     int line_number;
     int points_win;
     int points_loss;
