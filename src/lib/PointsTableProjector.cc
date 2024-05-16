@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstdio>
 #include <fstream>
 #include <functional>
 #include <iterator>
@@ -8,7 +9,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <cstdio>
 
 #include "Fixture.hh"
 #include "PointsTableProjector.hh"
@@ -18,7 +18,7 @@
 
 template <class... Args>
 void
-clog(char const* _file_, int _line_, char const*fmt , Args&&... args)
+clog(char const* _file_, int _line_, char const* fmt, Args&&... args)
 {
     std::fprintf(stderr, "\e[94m%s:%d\e[m ", _file_, _line_);
     std::fprintf(stderr, fmt, args...);
@@ -84,14 +84,22 @@ PointsTableProjector::parse(void)
         // C++11 and newer strings have a null terminator, so we can do this.
         if (line[0] != '[' || line[line.size() - 1] != ']')
         {
-            CLOG("Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+            CLOG(
+                "Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.",
+                this->fname, this->line_number, line.c_str()
+            );
             throw std::runtime_error("parse failure");
         }
         line = line.substr(1, line.size() - 2);
         if (line == "points")
         {
-            if(!this->teams.empty()){
-                CLOG("Cannot specify '[points]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already specified earlier.", this->fname, this->line_number);
+            if (!this->teams.empty())
+            {
+                CLOG(
+                    "Cannot specify '[points]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already "
+                    "specified earlier.",
+                    this->fname, this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_points(fhandle);
@@ -106,7 +114,11 @@ PointsTableProjector::parse(void)
         {
             if (!this->teams.empty())
             {
-                CLOG("Cannot specify '[table]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already specified earlier.", this->fname, this->line_number);
+                CLOG(
+                    "Cannot specify '[table]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already "
+                    "specified earlier.",
+                    this->fname, this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_points_table(fhandle);
@@ -116,7 +128,11 @@ PointsTableProjector::parse(void)
         {
             if (!this->teams.empty())
             {
-                CLOG("Cannot specify '[completed]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already specified earlier.", this->fname, this->line_number);
+                CLOG(
+                    "Cannot specify '[completed]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was "
+                    "already specified earlier.",
+                    this->fname, this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_fixture(fhandle, true);
@@ -126,13 +142,19 @@ PointsTableProjector::parse(void)
         {
             if (!this->upcoming_fixtures.empty())
             {
-                CLOG("Cannot specify '[upcoming]' in %s:%d '[upcoming]' was already specified earlier.", this->fname, this->line_number);
+                CLOG(
+                    "Cannot specify '[upcoming]' in %s:%d '[upcoming]' was already specified earlier.", this->fname,
+                    this->line_number
+                );
                 throw std::runtime_error("parse failure");
             }
             this->parse_fixture(fhandle, false);
             continue;
         }
-        CLOG("Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+        CLOG(
+            "Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.",
+            this->fname, this->line_number, line.c_str()
+        );
         throw std::runtime_error("parse failure");
     }
 
@@ -183,12 +205,18 @@ PointsTableProjector::parse_points(std::ifstream& fhandle)
         }
         else
         {
-            CLOG("Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+            CLOG(
+                "Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
             throw std::runtime_error("parse failure");
         }
         if (line_stream.fail())
         {
-            CLOG("Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+            CLOG(
+                "Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
             throw std::runtime_error("parse failure");
         }
     }
@@ -280,7 +308,10 @@ PointsTableProjector::parse_fixture(std::ifstream& fhandle, bool completed)
         std::size_t equals_idx = line.find('=');
         if (comma_idx == equals_idx || (comma_idx != std::string::npos && equals_idx != std::string::npos))
         {
-            CLOG("Expected two teams separated by either ',' or '=' in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+            CLOG(
+                "Expected two teams separated by either ',' or '=' in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
             throw std::runtime_error("parse failure");
         }
         std::size_t idx = comma_idx != std::string::npos ? comma_idx : equals_idx;
@@ -303,7 +334,9 @@ PointsTableProjector::parse_fixture(std::ifstream& fhandle, bool completed)
         {
             this->upcoming_fixtures.emplace_back(Fixture(this->teams[tid1], this->teams[tid2]));
         }
-        CLOG("Recorded fixture between '%s' and '%s'.", this->teams[tid1].tname.c_str(), this->teams[tid2].tname.c_str());
+        CLOG(
+            "Recorded fixture between '%s' and '%s'.", this->teams[tid1].tname.c_str(), this->teams[tid2].tname.c_str()
+        );
     }
 }
 
