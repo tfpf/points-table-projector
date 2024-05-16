@@ -16,6 +16,15 @@
 
 #define CLOG(...) clog(__FILE__, __LINE__, __VA_ARGS__)
 
+/******************************************************************************
+ * Write logging messages to the C error stream. Since we don't write to the
+ * C++ error stream anywhere, we don't have to synchronise them.
+ *
+ * @param _file_
+ * @param _line_
+ * @param fmt Format string.
+ * @param args Format string arguments.
+ *****************************************************************************/
 template <class... Args>
 void
 clog(char const* _file_, int _line_, char const* fmt, Args&&... args)
