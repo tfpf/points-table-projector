@@ -1,6 +1,6 @@
 CPPFLAGS = -Isrc/include
-CXXFLAGS = -std=c++11 -O2 -Wall -Wextra -flto=4 -fstrict-aliasing
-LDFLAGS = -flto=4
+CXXFLAGS = -std=c++11 -O2 -Wall -Wextra -flto -fstrict-aliasing
+LDFLAGS = -flto
 
 Headers = $(wildcard src/include/*.hh)
 Sources = $(wildcard src/lib/*.cc)
