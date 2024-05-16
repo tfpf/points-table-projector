@@ -14,8 +14,10 @@ a sequence of non-blank lines, the first of which contains a single word in squa
 ### `[points]`
 The number of points earned by a team in case of a win, loss and any other result. These must be on separate lines.
 * If this section is not specified, the three values will default to 2, 0 and 1 respectively.
-* If this section is specified, but any of the three values are not provided, the aforementioned default values will be
-  used for them.
+* If this section is specified,
+  * it must be before `[table]`, `[completed]` or `[upcoming]`; and
+  * the points in case of a win, loss and any other result need not all be specified (the above-mentioned default
+    values will be used if necessary).
 
 #### Examples
 ```
@@ -100,7 +102,7 @@ Apple,Banana
 
 ### `[upcoming]`
 Tournament fixtures which are to be played. Each fixture must be on a separate line. A fixture is described by the
-names of the two teams which will play. A comma <kbd>,</kbd> must separate them.
+names of the two teams which will play. A comma <kbd>,</kbd> or an equals sign <kbd>=</kbd> must separate them.
 
 #### Examples
 ```
@@ -119,6 +121,10 @@ Jackfruit,Banana
 
 ## Notes
 * Team names are case-sensitive, and must not contain spaces.
+* Spaces are not automatically stripped from anywhere. Not even before or after a comma <kbd>,</kbd> or an equals sign
+  <kbd>=</kbd>.
+  * Hence, avoid using spaces, except between a word and a number, as seen in the examples of the `[points]` and
+    `[table]` sections above.
 * The maximum number of teams supported is 1024.
   * This is not a hard limit. You can increase it simply by changing the number in the constructor of
     `PointsTableProjector`.

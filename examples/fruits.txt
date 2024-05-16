@@ -11,6 +11,6 @@ Apple,Banana
 
 [upcoming]
 Orange,Banana
-Apple,Guava
+Apple=Guava
 Orange,Jackfruit
 Jackfruit,Banana
