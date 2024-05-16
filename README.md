@@ -10,8 +10,9 @@ make -j
 ```
 
 ## Run
-Specify the path to a file describing the tournament as the first argument. Some example files are included in this
-repository. (For a detailed description of the syntax of the file and the resulting output, go to [`doc`](doc).)
+Specify the path to a file describing the tournament as the first argument. For examples of such files, see
+[`examples`](examples). For a detailed description of the syntax of the files and the resulting output, go to
+[`doc`](doc).
 
 ### Examples
 #### New Zealand, Men's Cricket World Cup 2023

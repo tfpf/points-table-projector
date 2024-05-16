@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <filesystem>
+#include <cstdio>
 #include <fstream>
 #include <functional>
-#include <iostream>
 #include <iterator>
 #include <random>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -14,11 +14,25 @@
 #include "PointsTableProjector.hh"
 #include "Team.hh"
 
-#define THROW(exc, msg)                                                                                               \
-    do                                                                                                                \
-    {                                                                                                                 \
-        throw exc(std::string(__FILE__) + ':' + std::to_string(__LINE__) + " in " + __func__ + ". " + msg);           \
-    } while (false)
+#define CLOG(...) clog(__FILE__, __LINE__, __VA_ARGS__)
+
+/******************************************************************************
+ * Write logging messages to the C error stream. Since we don't write to the
+ * C++ error stream anywhere, we don't have to synchronise them.
+ *
+ * @param _file_
+ * @param _line_
+ * @param fmt Format string.
+ * @param args Format string arguments.
+ *****************************************************************************/
+template <class... Args>
+void
+clog(char const* _file_, int _line_, char const* fmt, Args&&... args)
+{
+    std::fprintf(stderr, "\e[94m%s:%d\e[m ", _file_, _line_);
+    std::fprintf(stderr, fmt, args...);
+    std::fprintf(stderr, "\n");
+}
 
 /******************************************************************************
  * Constructor.
@@ -26,11 +40,11 @@
  * @param fname Input file name.
  * @param raw_output Whether to show plain output (i.e. without colours).
  *****************************************************************************/
-PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_output)
+PointsTableProjector::PointsTableProjector(char const* fname, bool raw_output)
     : fname(fname)
     , line_number(0)
     , points_win(2)
-    , points_lose(0)
+    , points_loss(0)
     , points_other(1)
     , box_horizontal("─")
     , box_up_right("└")
@@ -38,6 +52,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     , box_vertical_right("├")
     , inconsequential_begin("\e[90m")
     , inconsequential_end("\e[m")
+    , section_begin("[\e[92m")
+    , section_end("\e[m]")
 {
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
@@ -47,6 +63,8 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
     {
         this->box_horizontal = this->box_up_right = this->box_vertical = this->box_vertical_right = " ";
         this->inconsequential_begin = this->inconsequential_end = "";
+        this->section_begin = "[";
+        this->section_end = "]";
     }
 }
 
@@ -56,204 +74,291 @@ PointsTableProjector::PointsTableProjector(std::string const& fname, bool raw_ou
 void
 PointsTableProjector::parse(void)
 {
+    CLOG("Attempting to open '%s' for reading.", this->fname);
     std::ifstream fhandle(this->fname);
-    if (!fhandle.good() || !std::filesystem::is_regular_file(this->fname))
+    if (!fhandle.good())
     {
-        THROW(std::runtime_error, "Could not read '" + this->fname + "'.");
+        CLOG("Cannot open '%s' for reading.", this->fname);
+        throw std::runtime_error("I/O error");
     }
-    std::string favourite_tname;
-    while (true)
+
+    std::string line;
+    while (std::getline(fhandle, line))
     {
-        std::string readline;
         ++this->line_number;
-        if (!std::getline(fhandle, readline))
-        {
-            break;
-        }
-        if (readline.empty())
+        if (line.empty())
         {
             continue;
         }
-        // C++11 and newer strings are guaranteed to end with a null character,
-        // so it is safe to take the address of a character and treat it as a C
-        // string, as seen below.
-        if (readline.rfind("points.win", 0) == 0)
+        // C++11 and newer strings have a null terminator, so we can do this.
+        if (line[0] != '[' || line[line.size() - 1] != ']')
         {
-            this->parse_int(&readline[10], this->points_win);
-            continue;
+            CLOG(
+                "Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.",
+                this->fname, this->line_number, line.c_str()
+            );
+            throw std::runtime_error("parse failure");
         }
-        if (readline.rfind("points.lose", 0) == 0)
-        {
-            this->parse_int(&readline[11], this->points_lose);
-            continue;
-        }
-        if (readline.rfind("points.other", 0) == 0)
-        {
-            this->parse_int(&readline[12], this->points_other);
-            continue;
-        }
-        if (readline.rfind("team", 0) == 0)
-        {
-            // If this word is followed by nothing or a space, do not error
-            // out. Otherwise, identify it as the error it is.
-            if (readline[4] == ' ')
-            {
-                favourite_tname = readline.substr(5, std::string::npos);
-            }
-            else if (readline[4] != '\0')
-            {
-                this->unknown_keyword_error(readline);
-            }
-            continue;
-        }
-        if (readline == "fixtures.completed" || readline == "fixtures.results")
+        line = line.substr(1, line.size() - 2);
+        if (line == "points")
         {
             if (!this->teams.empty())
             {
-                THROW(std::invalid_argument,
-                    "'" + readline + "' found in '" + this->fname + "' on line " + std::to_string(this->line_number)
-                        + ", but one of 'fixtures.completed', 'fixtures.results' and 'fixtures.upcoming' has already "
-                          "been used previously.");
+                CLOG(
+                    "Cannot specify '[points]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already "
+                    "specified earlier.",
+                    this->fname, this->line_number
+                );
+                throw std::runtime_error("parse failure");
             }
-            bool completed_or_results = readline == "fixtures.completed";
-            while (std::getline(fhandle, readline) && !readline.empty())
-            {
-                ++this->line_number;
-                completed_or_results ? this->parse_fixture(readline, true) : this->parse_result(readline);
-            }
-            ++this->line_number;
+            this->parse_points(fhandle);
             continue;
         }
-        if (readline == "fixtures.upcoming")
+        if (line == "team")
         {
-            while (std::getline(fhandle, readline) && !readline.empty())
-            {
-                ++this->line_number;
-                this->parse_fixture(readline, false);
-            }
-            ++this->line_number;
+            this->parse_favourite_team(fhandle);
             continue;
         }
-        this->unknown_keyword_error(readline);
-    }
-    if (favourite_tname.empty())
-    {
-        THROW(std::runtime_error, "Favourite team not specified in '" + this->fname + "'.");
-    }
-    auto tname_tid_it = this->tname_tid.find(favourite_tname);
-    if (tname_tid_it == this->tname_tid.end())
-    {
-        THROW(std::runtime_error, "No fixtures involving '" + favourite_tname + "' found in '" + this->fname + "'.");
-    }
-    this->favourite_tid = tname_tid_it->second;
-    if (this->fixtures.empty())
-    {
-        THROW(std::runtime_error, "'fixtures.upcoming' empty or not specified in '" + this->fname + "'.");
-    }
-}
-
-/******************************************************************************
- * Generic error.
- *
- * @param str String which led to the error.
- *****************************************************************************/
-void
-PointsTableProjector::unknown_keyword_error(std::string const& str)
-{
-    THROW(std::invalid_argument,
-        "Unknown keyword '" + str + "' in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
-}
-
-/******************************************************************************
- * Parse a string as an integer. Store it in the specified variable.
- *
- * @param str String to parse. Expected to be numeric.
- * @param intvar Variable to store the result in.
- *****************************************************************************/
-void
-PointsTableProjector::parse_int(std::string const& str, int& intvar)
-{
-    try
-    {
-        intvar = std::stoi(str);
-    }
-    catch (std::exception& e)
-    {
-        THROW(std::invalid_argument,
-            "Could not parse '" + str + "' as an integer in '" + this->fname + "' on line "
-                + std::to_string(this->line_number) + '.');
-    }
-}
-
-/******************************************************************************
- * Parse a string as a match between two teams, registering them if necessary.
- *
- * @param str String to parse. Expected to be two comma- or equals-separated
- *     words.
- * @param update_points Whether this match has already been played. If `true`,
- *     update the points table. If `false`, store this match for later.
- *****************************************************************************/
-void
-PointsTableProjector::parse_fixture(std::string const& str, bool update_points)
-{
-    std::size_t delim_idx = str.find_first_of(",=");
-    if (delim_idx == std::string::npos)
-    {
-        THROW(std::invalid_argument,
-            "Neither ',' nor '=' found in '" + this->fname + "' on line " + std::to_string(this->line_number) + '.');
-    }
-    std::size_t first_tid = this->reg(str.substr(0, delim_idx));
-    std::size_t second_tid = this->reg(str.substr(delim_idx + 1, std::string::npos));
-    if (update_points)
-    {
-        if (str[delim_idx] == '=')
+        if (line == "table")
         {
-            this->teams[first_tid].points += this->points_other;
-            this->teams[second_tid].points += this->points_other;
+            if (!this->teams.empty())
+            {
+                CLOG(
+                    "Cannot specify '[table]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was already "
+                    "specified earlier.",
+                    this->fname, this->line_number
+                );
+                throw std::runtime_error("parse failure");
+            }
+            this->parse_points_table(fhandle);
+            continue;
+        }
+        if (line == "completed")
+        {
+            if (!this->teams.empty())
+            {
+                CLOG(
+                    "Cannot specify '[completed]' in %s:%d because '[table]', '[completed]' or '[upcoming]' was "
+                    "already specified earlier.",
+                    this->fname, this->line_number
+                );
+                throw std::runtime_error("parse failure");
+            }
+            this->parse_fixture(fhandle, true);
+            continue;
+        }
+        if (line == "upcoming")
+        {
+            if (!this->upcoming_fixtures.empty())
+            {
+                CLOG(
+                    "Cannot specify '[upcoming]' in %s:%d '[upcoming]' was already specified earlier.", this->fname,
+                    this->line_number
+                );
+                throw std::runtime_error("parse failure");
+            }
+            this->parse_fixture(fhandle, false);
+            continue;
+        }
+        CLOG(
+            "Expected '[points]', '[team]', '[table]', '[completed]' or '[upcoming]' in %s:%d. Found '%s'.",
+            this->fname, this->line_number, line.c_str()
+        );
+        throw std::runtime_error("parse failure");
+    }
+
+    if (this->favourite_tname.empty())
+    {
+        CLOG("'[team]' not specified in %s.", this->fname);
+        throw std::runtime_error("parse failure");
+    }
+    this->favourite_tid = this->tname_to_tid(this->favourite_tname);
+    if (this->upcoming_fixtures.empty())
+    {
+        CLOG("'[upcoming]' not specified in %s.", this->fname);
+        throw std::runtime_error("parse failure");
+    }
+}
+
+/******************************************************************************
+ * Note the points given in different situations.
+ *
+ * @param fhandle Stream to read from.
+ *****************************************************************************/
+void
+PointsTableProjector::parse_points(std::ifstream& fhandle)
+{
+    CLOG("Parsing '[points]'.");
+    std::string line;
+    while (std::getline(fhandle, line))
+    {
+        ++this->line_number;
+        if (line.empty())
+        {
+            break;
+        }
+        std::istringstream line_stream(line);
+        std::string outcome;
+        line_stream >> outcome;
+        if (outcome == "win")
+        {
+            line_stream >> this->points_win;
+        }
+        else if (outcome == "loss")
+        {
+            line_stream >> this->points_loss;
+        }
+        else if (outcome == "other")
+        {
+            line_stream >> this->points_other;
         }
         else
         {
-            this->teams[first_tid].points += this->points_win;
-            this->teams[second_tid].points += this->points_lose;
+            CLOG(
+                "Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
+            throw std::runtime_error("parse failure");
         }
+        if (line_stream.fail())
+        {
+            CLOG(
+                "Expected 'win', 'loss' or 'other', and an integer in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
+            throw std::runtime_error("parse failure");
+        }
+    }
+    CLOG("Set points in case of a win to %d.", this->points_win);
+    CLOG("Set points in case of a loss to %d.", this->points_loss);
+    CLOG("Set points in other cases to %d.", this->points_other);
+}
+
+/******************************************************************************
+ * Note the favourite team.
+ *
+ * @param fhandle Stream to read from.
+ *****************************************************************************/
+void
+PointsTableProjector::parse_favourite_team(std::ifstream& fhandle)
+{
+    CLOG("Parsing '[team]'.");
+    std::string line;
+    while (std::getline(fhandle, line))
+    {
+        ++this->line_number;
+        if (line.empty())
+        {
+            break;
+        }
+        this->favourite_tname = line;
+    }
+    CLOG("Set favourite team to '%s'.", this->favourite_tname.c_str());
+}
+
+/******************************************************************************
+ * Note the current standings in the tournament.
+ *
+ * @param fhandle Stream to read from.
+ *****************************************************************************/
+void
+PointsTableProjector::parse_points_table(std::ifstream& fhandle)
+{
+    CLOG("Parsing '[table]'.");
+    std::string line;
+    while (std::getline(fhandle, line))
+    {
+        ++this->line_number;
+        if (line.empty())
+        {
+            break;
+        }
+        std::istringstream line_stream(line);
+        std::string tname;
+        int points;
+        line_stream >> tname >> points;
+        if (line_stream.fail())
+        {
+            CLOG("Expected a team and an integer in %s:%d. Found '%s'.", this->fname, this->line_number, line.c_str());
+            throw std::runtime_error("parse failure");
+        }
+        std::size_t tid = this->tname_to_tid(tname);
+        this->teams[tid].points = points;
+        CLOG("Recorded '%s' with %d points.", tname.c_str(), points);
+    }
+}
+
+/******************************************************************************
+ * Note the fixtures in the tournament.
+ *
+ * @param fhandle Stream to read from.
+ * @param completed Whether the fixtures have been played or are to be played.
+ *****************************************************************************/
+void
+PointsTableProjector::parse_fixture(std::ifstream& fhandle, bool completed)
+{
+    if (completed)
+    {
+        CLOG("Parsing '[completed]'.");
     }
     else
     {
-        this->fixtures.emplace_back(Fixture(this->teams[first_tid], this->teams[second_tid]));
+        CLOG("Parsing '[upcoming]'.");
     }
-}
-
-/******************************************************************************
- * Parse a string as an entry of the points table. Update the points table
- * accordingly.
- *
- * @param str String to parse. Expected to word and an integer separated by a
- *     space.
- *****************************************************************************/
-void
-PointsTableProjector::parse_result(std::string const& str)
-{
-    std::size_t delim_idx = str.find(' ');
-    if (delim_idx == std::string::npos)
+    std::string line;
+    while (std::getline(fhandle, line))
     {
-        THROW(std::invalid_argument,
-            "Could not parse '" + str + "' as team name and points in '" + this->fname + "' on line "
-                + std::to_string(this->line_number) + '.');
+        ++this->line_number;
+        if (line.empty())
+        {
+            break;
+        }
+        std::size_t comma_idx = line.find(',');
+        std::size_t equals_idx = line.find('=');
+        if (comma_idx == equals_idx || (comma_idx != std::string::npos && equals_idx != std::string::npos))
+        {
+            CLOG(
+                "Expected two teams separated by either ',' or '=' in %s:%d. Found '%s'.", this->fname,
+                this->line_number, line.c_str()
+            );
+            throw std::runtime_error("parse failure");
+        }
+        std::size_t idx = comma_idx != std::string::npos ? comma_idx : equals_idx;
+        std::size_t tid1 = this->tname_to_tid(line.substr(0, idx));
+        std::size_t tid2 = this->tname_to_tid(line.substr(idx + 1, std::string::npos));
+        if (completed)
+        {
+            if (line[idx] == '=')
+            {
+                this->teams[tid1].points += this->points_other;
+                this->teams[tid2].points += this->points_other;
+            }
+            else
+            {
+                this->teams[tid1].points += this->points_win;
+                this->teams[tid2].points += this->points_loss;
+            }
+        }
+        else
+        {
+            this->upcoming_fixtures.emplace_back(Fixture(this->teams[tid1], this->teams[tid2]));
+        }
+        CLOG(
+            "Recorded fixture between '%s' and '%s'.", this->teams[tid1].tname.c_str(), this->teams[tid2].tname.c_str()
+        );
     }
-    std::size_t tid = this->reg(str.substr(0, delim_idx));
-    this->parse_int(&str[delim_idx + 1], this->teams[tid].points);
 }
 
 /******************************************************************************
- * Register a team by generating an ID for it if it isn't already registered.
- * The ID is the index at which this team is inserted.
+ * Given a team name, obtain its ID. If there isn't one yet, create an ID for
+ * it.
  *
  * @param tname Team name.
  *
  * @return Team ID.
  *****************************************************************************/
 std::size_t
-PointsTableProjector::reg(std::string const& tname)
+PointsTableProjector::tname_to_tid(std::string const& tname)
 {
     auto tname_tid_it = this->tname_tid.find(tname);
     if (tname_tid_it == this->tname_tid.end())
@@ -275,33 +380,39 @@ PointsTableProjector::dump(void)
     // Arrange the teams in decreasing order of points. If two have the same
     // points, place our favourite team at the lower index.
     std::vector<Team> teams(this->teams);
-    std::sort(teams.rbegin(), teams.rend(),
+    std::sort(
+        teams.rbegin(), teams.rend(),
         [&](Team const& a, Team const& b)
         {
             return a.points < b.points || (a.points == b.points && b.tid == this->favourite_tid);
-        });
-    int rank = std::find_if(teams.begin(), teams.end(),
+        }
+    );
+    int rank = std::find_if(
+                   teams.begin(), teams.end(),
                    [&](Team const& t)
                    {
                        return t.tid == this->favourite_tid;
-                   })
+                   }
+               )
         - teams.begin() + 1;
     std::cout << rank << '\n';
-    std::cout << this->box_vertical_right << this->box_horizontal << "fixtures.results\n";
+    std::cout << this->box_vertical_right << this->box_horizontal << this->section_begin << "table"
+              << this->section_end << '\n';
     for (Team const& team : teams)
     {
-        std::cout << this->box_vertical << "   " << team << '\n';
+        std::cout << this->box_vertical << " " << team << '\n';
     }
-    std::cout << this->box_up_right << this->box_horizontal << "fixtures.upcoming\n";
-    for (Fixture const& fixture : this->fixtures)
+    std::cout << this->box_up_right << this->box_horizontal << this->section_begin << "upcoming" << this->section_end
+              << '\n';
+    for (Fixture const& fixture : this->upcoming_fixtures)
     {
         if (fixture.inconsequential)
         {
-            std::cout << "    " << this->inconsequential_begin << fixture << this->inconsequential_end << '\n';
+            std::cout << "  " << this->inconsequential_begin << fixture << this->inconsequential_end << '\n';
         }
         else
         {
-            std::cout << "    " << fixture << '\n';
+            std::cout << "  " << fixture << '\n';
         }
     }
 }
@@ -319,7 +430,7 @@ PointsTableProjector::solve(void)
     {
         min_max[team.tid][0] = min_max[team.tid][1] = team.points;
     }
-    for (Fixture const& fixture : this->fixtures)
+    for (Fixture const& fixture : this->upcoming_fixtures)
     {
         // Assume our favourite team always wins, so its minimum and maximum
         // points are the same.
@@ -330,12 +441,12 @@ PointsTableProjector::solve(void)
         }
         if (fixture.a.tid != this->favourite_tid)
         {
-            min_max[fixture.a.tid][0] += this->points_lose;
+            min_max[fixture.a.tid][0] += this->points_loss;
             min_max[fixture.a.tid][1] += this->points_win;
         }
         if (fixture.b.tid != this->favourite_tid)
         {
-            min_max[fixture.b.tid][0] += this->points_lose;
+            min_max[fixture.b.tid][0] += this->points_loss;
             min_max[fixture.b.tid][1] += this->points_win;
         }
     }
@@ -349,7 +460,7 @@ PointsTableProjector::solve(void)
     }
 
     // Which fixtures are between such teams?
-    for (Fixture& fixture : this->fixtures)
+    for (Fixture& fixture : this->upcoming_fixtures)
     {
         fixture.inconsequential = fixture.a.inconsequential && fixture.b.inconsequential;
     }
@@ -366,7 +477,7 @@ PointsTableProjector::solve(void)
 void
 PointsTableProjector::solve_(std::size_t idx)
 {
-    if (idx >= this->fixtures.size())
+    if (idx >= this->upcoming_fixtures.size())
     {
         this->dump();
         return;
@@ -380,7 +491,7 @@ PointsTableProjector::solve_(std::size_t idx)
     };
 
     // If the outcome of this fixture does not matter, pick a winner randomly.
-    Fixture& fixture = this->fixtures[idx];
+    Fixture& fixture = this->upcoming_fixtures[idx];
     if (fixture.inconsequential)
     {
         fixture.ordered = bgen();
@@ -419,8 +530,8 @@ void
 PointsTableProjector::solve__(std::size_t idx, Team& winner, Team& loser)
 {
     winner.points += this->points_win;
-    loser.points += this->points_lose;
+    loser.points += this->points_loss;
     this->solve_(idx + 1);
-    loser.points -= this->points_lose;
+    loser.points -= this->points_loss;
     winner.points -= this->points_win;
 }
