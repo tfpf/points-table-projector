@@ -213,32 +213,32 @@ randomly. Hence, only 2<sup>1</sup> = 2 scenarios are output.
 
 <summary>Click to view possible output.</summary>
 
-```
+<pre>
 2
-├─[table]
+├─[<span style="color:lightgreen">table</span>]
 │ Apple 6
 │ Banana 5
 │ Jackfruit 4
 │ Guava 3
 │ Orange 2
-└─[upcoming]
+└─[<span style="color:lightgreen">upcoming</span>]
   Banana,Orange
-  Guava,Apple
+  <span style="color:grey">Guava,Apple</span>
   Jackfruit,Orange
   Banana,Jackfruit
 2
-├─[table]
+├─[<span style="color:lightgreen">table</span>]
 │ Apple 6
 │ Banana 5
 │ Orange 4
 │ Guava 3
 │ Jackfruit 2
-└─[upcoming]
+└─[<span style="color:lightgreen">upcoming</span>]
   Banana,Orange
-  Guava,Apple
+  <span style="color:grey">Guava,Apple</span>
   Orange,Jackfruit
   Banana,Jackfruit
-```
+</pre>
 
 </details>
 
