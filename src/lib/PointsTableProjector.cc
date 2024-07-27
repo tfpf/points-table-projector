@@ -40,20 +40,10 @@ clog(char const* _file_, int _line_, char const* fmt, Args&&... args)
  * @param fname Input file name.
  * @param raw_output Whether to show plain output (i.e. without colours).
  *****************************************************************************/
-PointsTableProjector::PointsTableProjector(char const* fname, bool raw_output)
-    : fname(fname)
-    , line_number(0)
-    , points_win(2)
-    , points_loss(0)
-    , points_other(1)
-    , box_horizontal("─")
-    , box_up_right("└")
-    , box_vertical("│")
-    , box_vertical_right("├")
-    , inconsequential_begin("\e[90m")
-    , inconsequential_end("\e[m")
-    , section_begin("[\e[92m")
-    , section_end("\e[m]")
+PointsTableProjector::PointsTableProjector(char const* fname, bool raw_output) :
+    fname(fname), line_number(0), points_win(2), points_loss(0), points_other(1), box_horizontal("─"),
+    box_up_right("└"), box_vertical("│"), box_vertical_right("├"), inconsequential_begin("\e[90m"),
+    inconsequential_end("\e[m"), section_begin("[\e[92m"), section_end("\e[m]")
 {
     // Prevent reallocation in this member, because we are going to store
     // references to its elements in another member.
